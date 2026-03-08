@@ -590,6 +590,7 @@ export default function App() {
     if (rev[r]?.[c]) return 'revealed'
     if (completed && entered && entered !== puzzle.grid[r]?.[c]) return 'complete-wrong'
     if (chk[r]?.[c]) {
+      if (!entered) return 'empty'
       return entered === puzzle.grid[r]?.[c] ? 'checked-right' : 'checked-wrong'
     }
     if (!entered) return 'empty'
