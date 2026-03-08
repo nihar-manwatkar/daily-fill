@@ -644,7 +644,7 @@ export default function GameScreen({
         }}
       >
         {isMobile ? (
-          /* Mobile: 3 separate swipe panels — use 100vw per panel for iOS Safari compatibility */
+          /* Mobile: 3 separate swipe panels — use 100% to avoid overflow, center content */
           <div style={{
             position: 'relative',
             width: '100%',
@@ -655,17 +655,17 @@ export default function GameScreen({
               display: 'flex',
               flexDirection: 'row',
               height: '100%',
-              width: '300vw',
+              width: '300%',
               flexShrink: 0,
-              transform: `translate3d(-${mobilePage * 100}vw, 0, 0)`,
+              transform: `translate3d(-${mobilePage * 33.333}%, 0, 0)`,
               transition: 'transform 0.25s ease',
               willChange: 'transform',
               WebkitBackfaceVisibility: 'hidden',
             }}>
               {/* Panel 0: Puzzle only — grid + clue bar + keyboard + action buttons */}
               <div style={{
-                width: '100vw',
-                minWidth: '100vw',
+                width: '33.333%',
+                minWidth: '33.333%',
                 flexShrink: 0,
                 minHeight: 0,
                 overflowY: 'auto',
@@ -673,6 +673,9 @@ export default function GameScreen({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                paddingLeft: 12,
+                paddingRight: 12,
+                boxSizing: 'border-box',
                 WebkitOverflowScrolling: 'touch',
               }}>
 
@@ -1060,7 +1063,7 @@ export default function GameScreen({
         {/* ── Mobile: Clues panel (swipe panel 1) ─────────────────────────────── */}
         {isMobile && (
           <div style={{
-            width: '100vw', minWidth: '100vw', flexShrink: 0, minHeight: 0,
+            width: '33.333%', minWidth: '33.333%', flexShrink: 0, minHeight: 0,
             display: 'flex', flexDirection: 'column',
             background: COLORS.white, border: `1px solid ${COLORS.border}`,
             borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
@@ -1128,7 +1131,7 @@ export default function GameScreen({
         {/* ── Mobile: Trivia panel (swipe panel 2) ─────────────────────────────── */}
         {isMobile && (
           <div style={{
-            width: '100vw', minWidth: '100vw', flexShrink: 0, minHeight: 0,
+            width: '33.333%', minWidth: '33.333%', flexShrink: 0, minHeight: 0,
             display: 'flex', flexDirection: 'column',
             background: COLORS.white, border: `1px solid ${COLORS.border}`,
             borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
