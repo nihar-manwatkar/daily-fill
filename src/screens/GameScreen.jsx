@@ -700,10 +700,16 @@ export default function GameScreen({
               borderRadius: '8px 8px 0 0',
               marginBottom: 0,
               flexShrink: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
             }}>
-              <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600 }}>
-                {clue.n} {dir === 'across' ? 'Across' : 'Down'}: {clue.clue}
-              </span>
+              <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9 }}>
+                {clue.n} {dir === 'across' ? 'Across' : 'Down'}
+              </div>
+              <div style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>
+                {clue.clue}
+              </div>
             </div>
           )}
 
@@ -838,8 +844,13 @@ export default function GameScreen({
                   <path d="M15 18l-6-6 6-6" />
                 </svg>
               </button>
-              <div style={{ flex: 1, minWidth: 0, fontSize: Math.round(15 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>
-                {clue.n} {dir === 'across' ? 'Across' : 'Down'}: {clue.clue}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9 }}>
+                  {clue.n} {dir === 'across' ? 'Across' : 'Down'}
+                </div>
+                <div style={{ fontSize: Math.round(15 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>
+                  {clue.clue}
+                </div>
               </div>
               <button
                 onClick={() => hasNextClue && goToClue(sequentialClues[currentClueIndex + 1].cl, sequentialClues[currentClueIndex + 1].dir)}
@@ -1188,8 +1199,9 @@ export default function GameScreen({
             {/* Left column - puzzle area */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0, minHeight: 0, overflowY: 'auto' }}>
               {clue && (
-                <div style={{ width: visC * cellSize, maxWidth: '100%', background: COLORS.accent, color: COLORS.white, padding: '12px 16px', borderRadius: '8px 8px 0 0', marginBottom: 0, flexShrink: 0 }}>
-                  <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600 }}>{clue.n} {dir === 'across' ? 'Across' : 'Down'}: {clue.clue}</span>
+                <div style={{ width: visC * cellSize, maxWidth: '100%', background: COLORS.accent, color: COLORS.white, padding: '12px 16px', borderRadius: '8px 8px 0 0', marginBottom: 0, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9 }}>{clue.n} {dir === 'across' ? 'Across' : 'Down'}</div>
+                  <div style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>{clue.clue}</div>
                 </div>
               )}
               <div ref={containerRef} style={{ flexShrink: 0, minWidth: Math.min(700, visC * 42), minHeight: visR * cellSize, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
