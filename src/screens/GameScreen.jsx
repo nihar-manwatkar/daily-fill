@@ -4,6 +4,7 @@ import { PENALTY } from '../data/puzzles.js'
 import { numAt, pairFor } from '../utils/helpers.js'
 import { useIsMobile } from '../utils/useIsMobile.js'
 import { FaWhatsapp, FaLinkedinIn, FaInstagram, FaFacebook, FaDownload, FaEllipsisH } from 'react-icons/fa'
+import MobileCustomKeyboard from '../components/MobileCustomKeyboard.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -208,6 +209,9 @@ export default function GameScreen({
   const [showAnswerGrid, setShowAnswerGrid] = useState(false)
   // Mobile header: burger menu dropdown open/close
   const [showHeaderMenu, setShowHeaderMenu] = useState(false)
+  // Mobile swipe: 0 = puzzle, 1 = clues, 2 = trivia
+  const [mobilePage, setMobilePage] = useState(0)
+  const swipeStartX = useRef(0)
   // Pre-generated share blob (ready before click) — avoids user-gesture expiration with async toBlob
   const shareBlobRef = useRef(null)
   const [shareToast, setShareToast] = useState(null)
@@ -228,12 +232,7 @@ export default function GameScreen({
     return () => { clearTimeout(t); observer.disconnect() }
   }, [visC, maxCell])
 
-  // Focus hidden input on mobile when cell is selected — opens native keyboard
-  useEffect(() => {
-    if (isMobile && !completed && sc && nativeInputRef.current) {
-      nativeInputRef.current.focus()
-    }
-  }, [isMobile, completed, sc])
+  // Mobile: custom keyboard — no native input focus
 
   // Pre-generate share blob when game completes — keeps share within user gesture when clicked
   useEffect(() => {
@@ -580,22 +579,78 @@ export default function GameScreen({
         )}
       </div>
 
-      {/* ── Main: grid column + clue panel column ──────────────────────────── */}
-      <div style={{
-        flex: 1,
-        minHeight: 0,
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        overflow: isMobile ? 'auto' : 'hidden',
-        padding: isMobile ? 12 : 16,
-        gap: isMobile ? 16 : 40,
-        maxWidth: isMobile ? '100%' : 1400,
-        margin: '0 auto',
-        width: '100%',
-      }}>
+      {/* ── Mobile: Page indicator (puzzle | clues | trivia) ──────────────────── */}
+      {isMobile && (
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0 4px',
+          flexShrink: 0, background: COLORS.paper || COLORS.bg,
+        }}>
+          {['Puzzle', 'Clues', 'Trivia'].map((label, i) => (
+            <button
+              key={label}
+              onClick={() => setMobilePage(i)}
+              style={{
+                background: 'none', border: 'none', padding: '4px 8px',
+                fontSize: 11, fontWeight: 700, fontFamily: FONTS.sans,
+                color: mobilePage === i ? COLORS.accent : COLORS.textMuted,
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{
+                display: 'inline-block',
+                width: 8, height: 8, borderRadius: '50%',
+                background: mobilePage === i ? COLORS.accent : COLORS.border,
+                marginRight: 4, verticalAlign: 'middle',
+              }} />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
-        {/* ── Left: Clue bar + grid + action buttons ─────────────────────────── */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto' }}>
+      {/* ── Main: grid column + clue panel column (desktop) or swipe (mobile) ─── */}
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflow: 'hidden',
+          padding: isMobile ? 12 : 16,
+          maxWidth: isMobile ? '100%' : 1400,
+          margin: '0 auto',
+          width: '100%',
+        }}
+        onTouchStart={e => { if (isMobile) swipeStartX.current = e.touches[0].clientX }}
+        onTouchEnd={e => {
+          if (!isMobile) return
+          const dx = e.changedTouches[0].clientX - swipeStartX.current
+          if (dx < -50) setMobilePage(p => Math.min(2, p + 1))
+          else if (dx > 50) setMobilePage(p => Math.max(0, p - 1))
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'row' : 'column',
+          height: '100%',
+          transform: isMobile ? `translateX(-${mobilePage * 33.333}%)` : 'none',
+          transition: 'transform 0.25s ease',
+          width: isMobile ? '300%' : '100%',
+        }}>
+        <div style={{
+          flex: isMobile ? 'none' : 1,
+          width: isMobile ? '100%' : '100%',
+          minWidth: isMobile ? '300%' : 0,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: isMobile ? 0 : 40,
+          overflow: 'hidden',
+        }}>
+
+        {/* ── Left: Clue bar + grid + action buttons (panel 0 on mobile) ───────── */}
+        <div style={{
+          flex: isMobile ? '0 0 33.333%' : 1,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto',
+        }}>
 
           {/* Green clue bar (above grid) — desktop only */}
           {clue && !isMobile && (
@@ -660,7 +715,6 @@ export default function GameScreen({
                       onClick={() => {
                         if (!completed) {
                           tap(r, c)
-                          if (isMobile) nativeInputRef.current?.focus()
                         }
                       }}
                       style={{
@@ -769,13 +823,20 @@ export default function GameScreen({
             </div>
           )}
 
+          {/* Mobile: Custom keyboard (replaces system) */}
+          {isMobile && !completed && (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 16, flexShrink: 0 }}>
+              <MobileCustomKeyboard onKey={(ch) => type(ch)} disabled={!sc} />
+            </div>
+          )}
+
           {/* ── Action buttons / answer toggle ──────────────────────────────── */}
           <div style={{
             flexShrink: 0,
             display: 'flex',
             flexDirection: 'row',
             gap: 8,
-            marginTop: 20,
+            marginTop: isMobile && !completed ? 12 : 20,
             paddingBottom: isMobile ? 12 : 0,
             width: visC * cellSize,
             maxWidth: '100%',
@@ -803,10 +864,10 @@ export default function GameScreen({
                 {showAnswerGrid ? '📋 Answer Key' : 'Hold to Compare Answer'}
               </button>
             ) : (
-              /* During game: Reveal, Check, Complete */
+              /* During game: Reveal, Check, Complete — same width on mobile */
               <>
-                <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0 }}>
-                  <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, width: '100%', minWidth: 0 }}>
+                <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex' }}>
+                  <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0 }}>
                     Reveal ▾
                   </button>
                   {showRevMenu && (
@@ -845,7 +906,7 @@ export default function GameScreen({
                       onClick={checkWord}
                       style={{
                         ...actionBtnUnderGrid,
-                        flex: '1 1 0', minWidth: 0,
+                        flex: 1, minWidth: 0,
                         opacity: wordReady ? 1 : 0.4,
                         cursor: wordReady ? 'pointer' : 'not-allowed',
                       }}
@@ -967,12 +1028,12 @@ export default function GameScreen({
 
         </div>
 
-        {/* ── Right: Clue panel with ACROSS / DOWN / TRIVIA tabs ──────────────── */}
+        {/* ── Right: Clue panel (desktop only) ─────────────────────────────────── */}
+        {!isMobile && (
         <div style={{
-          flex: isMobile ? 'none' : '0 0 400px',
-          minWidth: isMobile ? '100%' : 350,
-          maxWidth: isMobile ? '100%' : 460,
-          maxHeight: isMobile ? 360 : 'none',
+          flex: '0 0 400px',
+          minWidth: 350,
+          maxWidth: 460,
           minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
@@ -1163,37 +1224,121 @@ export default function GameScreen({
             })()}
           </div>
         </div>
+        )}
+
+        {/* ── Mobile: Clues panel (swipe panel 1) ─────────────────────────────── */}
+        {isMobile && (
+          <div style={{
+            width: '33.333%', flexShrink: 0, minHeight: 0,
+            display: 'flex', flexDirection: 'column',
+            background: COLORS.white, border: `1px solid ${COLORS.border}`,
+            borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
+              <div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 2, fontFamily: FONTS.sans }}>ACROSS</div>
+              {sortedAcross.map(cl => {
+                const isActive = clue && clue.n === cl.n && dir === 'across'
+                const filled = isClueFilled(ug, cl, 'across')
+                return (
+                  <div
+                    key={`a-${cl.n}`}
+                    onClick={() => goToClue && goToClue(cl, 'across')}
+                    style={{
+                      padding: '5px 8px', cursor: 'pointer',
+                      background: isActive ? COLORS.clueHighlight : 'transparent',
+                      borderRadius: 3, marginBottom: 2,
+                      opacity: filled ? 0.55 : 1,
+                      color: filled ? COLORS.textMuted : COLORS.textPrimary,
+                    }}
+                  >
+                    <span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span>
+                    <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span>
+                  </div>
+                )
+              })}
+              <div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 14, fontFamily: FONTS.sans }}>DOWN</div>
+              {sortedDown.length > 0 ? sortedDown.map(cl => {
+                const isActive = clue && clue.n === cl.n && dir === 'down'
+                const filled = isClueFilled(ug, cl, 'down')
+                return (
+                  <div
+                    key={`d-${cl.n}`}
+                    onClick={() => goToClue && goToClue(cl, 'down')}
+                    style={{
+                      padding: '5px 8px', cursor: 'pointer',
+                      background: isActive ? COLORS.clueHighlight : 'transparent',
+                      borderRadius: 3, marginBottom: 2,
+                      opacity: filled ? 0.55 : 1,
+                      color: filled ? COLORS.textMuted : COLORS.textPrimary,
+                    }}
+                  >
+                    <span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span>
+                    <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span>
+                  </div>
+                )
+              }) : (
+                <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 4 }}>No down clues.</div>
+              )}
+              {clue && sc && (() => {
+                const pair = pairFor(puzzle, sc[0], sc[1])
+                const hasBoth = pair.across && pair.down
+                return hasBoth ? (
+                  <div style={{ marginTop: 12 }}>
+                    <button onClick={flipDir} style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 12, cursor: 'pointer', fontFamily: FONTS.sans, textDecoration: 'underline' }}>
+                      {dir === 'across' ? '↕ Switch to Down' : '↔ Switch to Across'}
+                    </button>
+                  </div>
+                ) : null
+              })()}
+            </div>
+          </div>
+        )}
+
+        {/* ── Mobile: Trivia panel (swipe panel 2) ─────────────────────────────── */}
+        {isMobile && (
+          <div style={{
+            width: '33.333%', flexShrink: 0, minHeight: 0,
+            display: 'flex', flexDirection: 'column',
+            background: COLORS.white, border: `1px solid ${COLORS.border}`,
+            borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
+              {completed ? (
+                <div>
+                  {allTriviaItems.length === 0 && (
+                    <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 8 }}>No trivia available for this puzzle.</div>
+                  )}
+                  {allTriviaItems.map(({ cl, dir: d }, idx) => {
+                    const word = getWordStr(puzzle, cl, d)
+                    const correct = isWordCorrect(puzzle, ug, cl, d)
+                    return (
+                      <div key={`${cl.n}-${d}`} style={{ marginBottom: 18, paddingBottom: 18, borderBottom: idx < allTriviaItems.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                          <span style={{ fontFamily: FONTS.serif, fontSize: 15, fontWeight: 700, color: COLORS.textPrimary, letterSpacing: 0.5, textTransform: 'uppercase' }}>{word}</span>
+                          <span style={{ fontSize: 10, fontFamily: FONTS.sans, background: '#f0f0f0', borderRadius: 4, padding: '2px 6px', color: COLORS.textMuted }}>{cl.n}{d === 'across' ? 'A' : 'D'}</span>
+                          <span style={{ fontSize: 10, fontFamily: FONTS.sans, background: correct ? '#dcfce7' : '#fee2e2', color: correct ? '#16a34a' : '#dc2626', borderRadius: 4, padding: '2px 6px', fontWeight: 700 }}>{correct ? '✓' : '✗'}</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: COLORS.textMuted, fontFamily: FONTS.sans, marginBottom: 6, fontStyle: 'italic' }}>{cl.clue}</div>
+                        <div style={{ fontSize: 13, color: '#444', fontFamily: FONTS.sans, lineHeight: 1.55 }}>{cl.trivia}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '32px 16px', gap: 12 }}>
+                  <div style={{ fontSize: 36 }}>🔒</div>
+                  <div style={{ fontFamily: FONTS.serif, fontSize: 16, color: COLORS.textPrimary }}>Trivia Locked</div>
+                  <div style={{ fontSize: 13, color: COLORS.textMuted, fontFamily: FONTS.sans, lineHeight: 1.5 }}>Complete the crossword and submit your score to unlock the story behind every word.</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        </div>
+        </div>
       </div>
 
-      {/* ── Native system keyboard trigger — mobile only (hidden input) ─────── */}
-      {isMobile && !completed && (
-        <input
-          ref={nativeInputRef}
-          type="text"
-          inputMode="text"
-          autoCapitalize="characters"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
-          aria-hidden="true"
-          tabIndex={-1}
-          style={{
-            position: 'absolute', left: -9999, width: 1, height: 1,
-            opacity: 0, pointerEvents: 'none',
-          }}
-          value=""
-          onChange={() => {}}
-          onKeyDown={e => {
-            if (e.key === 'Backspace') {
-              e.preventDefault()
-              type('⌫')
-            } else if (/^[a-zA-Z]$/.test(e.key)) {
-              e.preventDefault()
-              type(e.key.toUpperCase())
-            }
-          }}
-        />
-      )}
+      {/* Mobile: custom keyboard replaces system — no hidden input */}
 
       {/* ── Completion overlay ──────────────────────────────────────────────── */}
       {showComplete && (
