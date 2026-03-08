@@ -178,6 +178,7 @@ export default function GameScreen({
   allFilled, completed, submittedScore, completedCorrect,
   showComplete, setShowComplete,
   markComplete,
+  markCompleteEarly,
   tap, type,
   cellState, isInClue,
   flipDir,
@@ -426,6 +427,21 @@ export default function GameScreen({
   const hasPrevClue = currentClueIndex > 0
   const hasNextClue = currentClueIndex >= 0 && currentClueIndex < sequentialClues.length - 1
 
+  // ── Fill percent (for early submit: show option when ≥30%) ─────────────────
+  const fillPercent = useMemo(() => {
+    if (!puzzle?.grid) return 0
+    let total = 0, filled = 0
+    for (let r = 0; r < puzzle.grid.length; r++) {
+      for (let c = 0; c < (puzzle.grid[r]?.length ?? 0); c++) {
+        if (puzzle.grid[r]?.[c]) {
+          total++
+          if (ug[r]?.[c]) filled++
+        }
+      }
+    }
+    return total > 0 ? filled / total : 0
+  }, [puzzle?.grid, ug])
+
   // ── Trivia data for the clue panel tab ──────────────────────────────────
   const allTriviaItems = [
     ...sortedAcross.map(cl => ({ cl, dir: 'across' })),
@@ -585,7 +601,7 @@ export default function GameScreen({
           display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0 4px',
           flexShrink: 0, background: COLORS.paper || COLORS.bg,
         }}>
-          {['Puzzle', 'Clues', 'Trivia'].map((label, i) => (
+          {['Puzzle', 'Clues List', 'Trivia'].map((label, i) => (
             <button
               key={label}
               onClick={() => setMobilePage(i)}
@@ -930,6 +946,11 @@ export default function GameScreen({
                     Complete
                   </button>
                 )}
+                {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && (
+                  <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>
+                    Submit Early (−5 pts per empty)
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -1195,6 +1216,7 @@ export default function GameScreen({
                     </div>
                     {(() => { const wordReady = clue ? Array.from({ length: clue.len }, (_, i) => { const r2 = dir === 'across' ? clue.r : clue.r + i; const c2 = dir === 'across' ? clue.c + i : clue.c; return ug[r2]?.[c2] || '' }).every(Boolean) : false; return <button onClick={checkWord} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0, opacity: wordReady ? 1 : 0.4, cursor: wordReady ? 'pointer' : 'not-allowed' }} disabled={!wordReady}>Check</button> })()}
                     {allFilled && !completed && <button onClick={markComplete} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none' }}>Complete</button>}
+                    {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>Submit Early (−5 pts per empty)</button>}
                   </>
                 )}
               </div>
@@ -1394,6 +1416,7 @@ export default function GameScreen({
                 { icon: '❌', title: 'Wrong at submit: −3 pts per cell', desc: 'Cells you never checked that end up wrong.' },
                 { icon: '💡', title: 'Reveal penalties',         desc: `Letter: −${PENALTY.letter} pts · Word: −${PENALTY.word} pts · Full grid: −100 pts.` },
                 { icon: '✓',  title: 'Check Word: −10 pts if wrong, free if correct', desc: 'No penalty for checking a correct word. Only charged −10 pts when the word has errors.' },
+                { icon: '📤', title: 'Submit Early: −5 pts per empty cell', desc: 'After 30% filled, you can submit early. Empty cells cost 5 pts each. Score cannot go below 0.' },
                 { icon: '✔',  title: 'Mark Complete',            desc: 'Score locks when you tap Complete.' },
                 { icon: '🏆', title: 'Same puzzle, everyone',    desc: 'All players get the same grid per category.' },
                 { icon: '⏱️', title: 'No time pressure',         desc: 'Scoring is not based on how quickly you finish.' },

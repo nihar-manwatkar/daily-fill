@@ -43,6 +43,7 @@ export default function App() {
 
   // ── Puzzle ──────────────────────────────────────────────────────────────────
   const [puzzle, setPuzzle] = useState(null)
+  const [puzzleDate, setPuzzleDate] = useState(null) // Date when puzzle was loaded (IST) — used to avoid submitting when day has reset
 
   // ── Once-per-day lock ────────────────────────────────────────────────────────
   const hasPlayed = hasPlayedToday('classic')
@@ -76,6 +77,7 @@ export default function App() {
   const [showRevMenu, setShowRevMenu] = useState(false)
   const [showScore,   setShowScore]   = useState(false)
   const [showRulesModal, setShowRulesModal] = useState(false)
+  const [showScoringRules, setShowScoringRules] = useState(false)
   const [leaderboard, setLeaderboard] = useState([])
   const [showRecoveryPassword, setShowRecoveryPassword] = useState(false)
 
@@ -171,7 +173,7 @@ export default function App() {
 
   // ── Use a ref for latest state in event handlers (avoids stale closures) ────
   const stateRef = useRef({})
-  stateRef.current = { puzzle, ug, rev, chk, sc, dir, clue, pen, user }
+  stateRef.current = { puzzle, ug, rev, chk, sc, dir, clue, pen, user, puzzleDate }
 
   // ── Fetch leaderboard when on leaderboard screen ─────────────────────────────
   useEffect(() => {
@@ -212,7 +214,9 @@ export default function App() {
     const R = pz.grid.length
     const C = Math.max(pz.grid[0]?.length ?? 0, ...pz.grid.map(row => row?.length ?? 0))
     if (C < 1) return
+    const today = getIstDateStr()
     setPuzzle(pz)
+    setPuzzleDate(today)
 
     const saved = loadProgress()
     const canResume = saved && !saved.completed && saved.ug?.length === R
@@ -454,10 +458,50 @@ export default function App() {
     setCompleted(true)
     setCompletedCorrect(allRight)
     setShowComplete(true)
-    markPlayedToday('classic')
-    const { user: u } = stateRef.current
-    if (u?.id) {
-      submitScore(u.id, getIstDateStr(), locked, allRight)
+    // Only submit and mark played if puzzle is still for today (day hasn't reset)
+    const today = getIstDateStr()
+    if (puzzleDate === today) {
+      markPlayedToday('classic')
+      const { user: u } = stateRef.current
+      if (u?.id) submitScore(u.id, today, locked, allRight)
+    }
+  }
+
+  /** Submit early (incomplete puzzle): −5 pts per empty cell, min 0. Only when ≥30% filled. */
+  const markCompleteEarly = () => {
+    const { puzzle: pz, ug: g, rev: rv, chk: ck, pen: p } = stateRef.current
+    if (!pz) return
+
+    let totalCells = 0
+    let filledCells = 0
+    let wrongUnchecked = 0
+    let allRight = true
+
+    for (let rr = 0; rr < pz.grid.length; rr++) {
+      for (let cc = 0; cc < pz.grid[0].length; cc++) {
+        if (pz.grid[rr][cc]) {
+          totalCells++
+          if (g[rr]?.[cc]) filledCells++
+          if (g[rr][cc] !== pz.grid[rr][cc]) {
+            allRight = false
+            if (!rv[rr]?.[cc] && !ck[rr]?.[cc]) wrongUnchecked++
+          }
+        }
+      }
+    }
+
+    const emptyCells = totalCells - filledCells
+    const locked = Math.max(0, 100 - wrongUnchecked * 3 - p - emptyCells * 5)
+    setErrors(wrongUnchecked)
+    setSubmittedScore(locked)
+    setCompleted(true)
+    setCompletedCorrect(allRight)
+    setShowComplete(true)
+    const today = getIstDateStr()
+    if (puzzleDate === today) {
+      markPlayedToday('classic')
+      const { user: u } = stateRef.current
+      if (u?.id) submitScore(u.id, today, locked, allRight)
     }
   }
 
@@ -690,6 +734,7 @@ export default function App() {
           board={leaderboard}
           score={score}
           onLogout={logout}
+          onShowScoringRules={() => setShowScoringRules(true)}
         />
       )}
 
@@ -704,6 +749,7 @@ export default function App() {
           completedCorrect={completedCorrect}
           showComplete={showComplete} setShowComplete={setShowComplete}
           markComplete={markComplete}
+          markCompleteEarly={markCompleteEarly}
           tap={tap} type={commitKey}
           cellState={cellState} numAt={(r, c) => numAt(puzzle, r, c)} isInClue={isInClue}
           flipDir={flipDir}
@@ -728,6 +774,47 @@ export default function App() {
           goBack={() => setScreen('home')}
           onLogout={logout}
         />
+      )}
+
+      {/* ── Scoring rules modal (from home menu or game ?) ───────────────────── */}
+      {showScoringRules && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 300, padding: 20,
+          }}
+          onClick={e => { if (e.target === e.currentTarget) setShowScoringRules(false) }}
+        >
+          <div style={{
+            background: COLORS.white, borderRadius: 16, padding: '32px 28px',
+            width: '100%', maxWidth: 420, animation: 'popIn 0.25s ease', position: 'relative',
+          }}>
+            <button onClick={() => setShowScoringRules(false)} style={{ position: 'absolute', top: 16, right: 18, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: COLORS.textFaint }}>✕</button>
+            <div style={{ fontFamily: FONTS.serif, fontSize: 24, color: COLORS.textPrimary, marginBottom: 10 }}>How Scoring Works</div>
+            <div style={{ color: '#666', fontSize: 15, marginBottom: 18, fontFamily: FONTS.sans, lineHeight: 1.5 }}>You start at 100 pts.</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { icon: '⭐', title: 'Start: 100 pts', desc: 'Everyone starts fresh each day.' },
+                { icon: '❌', title: 'Wrong at submit: −3 pts per cell', desc: 'Cells you never checked that end up wrong.' },
+                { icon: '💡', title: 'Reveal penalties', desc: `Letter: −${PENALTY.letter} pts · Word: −${PENALTY.word} pts · Full grid: −100 pts.` },
+                { icon: '✓', title: 'Check Word: −10 pts if wrong, free if correct', desc: 'No penalty for checking a correct word. Only charged −10 pts when the word has errors.' },
+                { icon: '📤', title: 'Submit Early: −5 pts per empty cell', desc: 'After 30% filled, you can submit early. Empty cells cost 5 pts each. Score cannot go below 0.' },
+                { icon: '✔', title: 'Mark Complete', desc: 'Score locks when you tap Complete.' },
+                { icon: '🏆', title: 'Same puzzle, everyone', desc: 'All players get the same grid per category.' },
+                { icon: '⏱️', title: 'No time pressure', desc: 'Scoring is not based on how quickly you finish.' },
+              ].map(({ icon, title, desc }) => (
+                <div key={title} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 20, flexShrink: 0, marginTop: 1 }}>{icon}</span>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 16, color: COLORS.textPrimary, fontFamily: FONTS.sans }}>{title}</div>
+                    <div style={{ fontSize: 15, color: '#666', marginTop: 3, lineHeight: 1.5, fontFamily: FONTS.sans }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ── First-time rules modal (shown before first play) ───────────────────── */}

@@ -1,51 +1,68 @@
+import { useState } from 'react'
 import { S, COLORS, FONTS } from '../utils/styles.js'
 import { useIsMobile } from '../utils/useIsMobile.js'
 
 const TOP_N = 8
 
-export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame, goBoard, board = [], score = 0, onLogout }) {
+export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame, goBoard, board = [], score = 0, onLogout, onShowScoringRules }) {
   const isMobile = useIsMobile()
+  const [showMenu, setShowMenu] = useState(false)
 
   return (
     <div style={{ ...S.screen, background: COLORS.bg }}>
 
-      {/* ── Header ── */}
+      {/* ── Header: DF logo, Daily Rankings, Timer, Menu ── */}
       <div style={{ background: COLORS.headerBg }}>
-        <div style={{ ...S.contentWrapWide, padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontFamily: FONTS.serif, fontSize: 24, color: COLORS.white }}>
-            Daily<span style={{ color: COLORS.accentLight }}>Fill</span>
+        <div style={{ ...S.contentWrapWide, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ fontFamily: FONTS.serif, fontSize: 22, fontWeight: 700, color: COLORS.white, letterSpacing: 0.5 }}>
+            DF
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-            {!isMobile && (
-              <div style={{ color: '#555', fontSize: 12, fontFamily: FONTS.sans }}>
-                Same grid. Every player. Resets midnight IST.
-              </div>
-            )}
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ color: COLORS.accentLight, fontWeight: 700, fontSize: 13, fontFamily: FONTS.sans }}>{cd}</div>
-              {isMobile && <div style={{ color: COLORS.textMuted, fontSize: 10, fontFamily: FONTS.sans }}>resets midnight IST</div>}
-            </div>
-            {user?.username && (
-              <span style={{ color: '#aaa', fontSize: 13, fontFamily: FONTS.sans }}>{user.username}</span>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <button onClick={goBoard} style={{
-              background: '#222', border: '1.5px solid #444', borderRadius: 7,
-              padding: '6px 14px', color: '#ccc', fontSize: 12,
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 6,
+              padding: '6px 12px', color: COLORS.white, fontSize: 12,
               cursor: 'pointer', fontWeight: 600, fontFamily: FONTS.sans,
             }}>
               Daily Rankings
             </button>
-            {onLogout && (
-              <button onClick={onLogout} style={{
-                background: 'transparent', border: '1px solid #555', borderRadius: 6,
-                padding: '5px 10px', color: '#999', fontSize: 11,
-                cursor: 'pointer', fontFamily: FONTS.sans,
-              }}>
-                Log out
+            <div style={{ color: COLORS.accentLight, fontWeight: 700, fontSize: 13, fontFamily: FONTS.sans }}>{cd}</div>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowMenu(v => !v)}
+                style={{
+                  width: 36, height: 36, borderRadius: 6,
+                  background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)',
+                  color: COLORS.white, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+                aria-label="Menu"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
               </button>
-            )}
+              {showMenu && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                  background: COLORS.white, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                  overflow: 'hidden', minWidth: 160, zIndex: 100,
+                }}>
+                  <button onClick={() => { onShowScoringRules?.(); setShowMenu(false) }} style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'none', fontFamily: FONTS.sans, fontSize: 14, color: COLORS.textPrimary, cursor: 'pointer' }}>
+                    Rules of scoring
+                  </button>
+                  {onLogout && (
+                    <button onClick={() => { onLogout(); setShowMenu(false) }} style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'none', fontFamily: FONTS.sans, fontSize: 14, color: COLORS.textPrimary, cursor: 'pointer', borderTop: `1px solid ${COLORS.border}` }}>
+                      Log out
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
+        {showMenu && <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 99 }} aria-hidden="true" />}
       </div>
 
       {/* ── Body ── */}

@@ -47,30 +47,43 @@ export default function MobileCustomKeyboard({ onKey, disabled }) {
     }}>
       <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
         {ROW1.map(k => (
-          <button key={k} onClick={() => handleKey(k)} style={keyStyle()} onTouchEnd={e => e.preventDefault()}>
+          <button key={k} type="button" onPointerDown={e => { e.preventDefault(); handleKey(k) }} onTouchStart={e => { e.preventDefault(); handleKey(k) }} onClick={() => handleKey(k)} style={keyStyle()}>
             {k}
           </button>
         ))}
       </div>
       <div style={{ display: 'flex', gap: 4, justifyContent: 'center', paddingLeft: 18 }}>
         {ROW2.map(k => (
-          <button key={k} onClick={() => handleKey(k)} style={keyStyle()} onTouchEnd={e => e.preventDefault()}>
+          <button key={k} type="button" onPointerDown={e => { e.preventDefault(); handleKey(k) }} onTouchStart={e => { e.preventDefault(); handleKey(k) }} onClick={() => handleKey(k)} style={keyStyle()}>
             {k}
           </button>
         ))}
       </div>
       <div style={{ display: 'flex', gap: 4, alignItems: 'center', justifyContent: 'center' }}>
-        <button onClick={() => handleKey('⌫')} style={{ ...keyStyle(true), minWidth: 52 }} onTouchEnd={e => e.preventDefault()}>
+        {ROW3.map(k => (
+          <button
+            key={k}
+            type="button"
+            onPointerDown={e => { e.preventDefault(); handleKey(k) }}
+            onTouchStart={e => { e.preventDefault(); handleKey(k) }}
+            onClick={() => handleKey(k)}
+            style={keyStyle()}
+          >
+            {k}
+          </button>
+        ))}
+        <button
+          type="button"
+          onPointerDown={e => { e.preventDefault(); handleKey('⌫') }}
+          onTouchStart={e => { e.preventDefault(); handleKey('⌫') }}
+          onClick={() => handleKey('⌫')}
+          style={{ ...keyStyle(true), minWidth: 52 }}
+        >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" />
             <path d="M18 9l-6 6M12 9l6 6" />
           </svg>
         </button>
-        {ROW3.map(k => (
-          <button key={k} onClick={() => handleKey(k)} style={keyStyle()} onTouchEnd={e => e.preventDefault()}>
-            {k}
-          </button>
-        ))}
       </div>
     </div>
   )
