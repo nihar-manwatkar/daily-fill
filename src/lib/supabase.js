@@ -5,8 +5,14 @@
  */
 import { createClient } from '@supabase/supabase-js'
 
-const url = import.meta.env.VITE_SUPABASE_URL
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+let supabase = null
+try {
+  const url = (import.meta.env.VITE_SUPABASE_URL || '').trim()
+  const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
+  if (url && anonKey) supabase = createClient(url, anonKey)
+} catch (e) {
+  console.warn('Supabase init failed:', e.message)
+}
 
-export const supabase = url && anonKey ? createClient(url, anonKey) : null
+export { supabase }
 export const isSupabaseConfigured = () => !!supabase

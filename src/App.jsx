@@ -125,16 +125,20 @@ export default function App() {
       return
     }
     setTimeout(async () => {
-      if (isSupabaseConfigured()) {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.user) {
-          const { data: profile } = await supabase.from('profiles').select('username').eq('id', session.user.id).single()
-          const u = { id: session.user.id, email: session.user.email, username: profile?.username || 'user' }
-          setUser(u)
-          saveUser(u)
-          setScreen('home')
-          return
+      try {
+        if (isSupabaseConfigured()) {
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.user) {
+            const { data: profile } = await supabase.from('profiles').select('username').eq('id', session.user.id).single()
+            const u = { id: session.user.id, email: session.user.email, username: profile?.username || 'user' }
+            setUser(u)
+            saveUser(u)
+            setScreen('home')
+            return
+          }
         }
+      } catch (e) {
+        console.warn('Session check failed:', e.message)
       }
       const saved = getSavedUser()
       if (saved) {
