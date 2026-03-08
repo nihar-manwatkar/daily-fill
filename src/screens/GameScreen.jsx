@@ -902,70 +902,71 @@ export default function GameScreen({
                 {showAnswerGrid ? '📋 Answer Key' : 'Hold to Compare Answer'}
               </button>
             ) : (
-              /* During game: Reveal, Check, Complete — same width on mobile */
-              <>
-                <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex' }}>
-                  <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0 }}>
-                    Reveal ▾
-                  </button>
-                  {showRevMenu && (
-                    <div style={{
-                      position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
-                      background: COLORS.white, border: `2px solid ${COLORS.borderDark}`,
-                      borderRadius: 8, overflow: 'hidden', zIndex: 50, boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}>
-                      {[
-                        { label: 'Letter', sub: `−${PENALTY.letter} pts`, fn: revLetter },
-                        { label: 'Word',   sub: `−${PENALTY.word} pts`, fn: revWord },
-                        { label: 'All',    sub: '−100 pts', fn: revAll, warn: true },
-                      ].map(({ label, sub, fn, warn }) => (
-                        <button key={label} onClick={fn} style={{
-                          display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left',
-                          background: 'none', border: 'none', fontFamily: FONTS.sans, fontSize: Math.round(16 * FONT_SCALE), fontWeight: 600,
-                    color: warn ? COLORS.error : COLORS.textPrimary, cursor: 'pointer',
-                  }}>
-                    {label} <span style={{ color: COLORS.textFaint, fontSize: Math.round(14 * FONT_SCALE) }}>({sub})</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {(() => {
-                  // Check is only enabled when every cell of the current word has a letter
-                  const wordReady = clue
-                    ? Array.from({ length: clue.len }, (_, i) => {
-                        const r2 = dir === 'across' ? clue.r : clue.r + i
-                        const c2 = dir === 'across' ? clue.c + i : clue.c
-                        return ug[r2]?.[c2] || ''
-                      }).every(Boolean)
-                    : false
-                  return (
-                    <button
-                      onClick={checkWord}
-                      style={{
-                        ...actionBtnUnderGrid,
-                        flex: 1, minWidth: 0,
-                        opacity: wordReady ? 1 : 0.4,
-                        cursor: wordReady ? 'pointer' : 'not-allowed',
-                      }}
-                      disabled={!wordReady}
-                      title={!clue ? 'Select a word first' : !wordReady ? 'Fill in every cell of the word before checking' : 'Check this word'}
-                    >
-                      Check
+              /* During game: Row 1 = Reveal + Check (same width), Row 2 = Complete/Submit Early (full width) */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+                <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                  <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex' }}>
+                    <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0 }}>
+                      Reveal ▾
                     </button>
-                  )
-                })()}
+                    {showRevMenu && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
+                        background: COLORS.white, border: `2px solid ${COLORS.borderDark}`,
+                        borderRadius: 8, overflow: 'hidden', zIndex: 50, boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      }}>
+                        {[
+                          { label: 'Letter', sub: `−${PENALTY.letter} pts`, fn: revLetter },
+                          { label: 'Word',   sub: `−${PENALTY.word} pts`, fn: revWord },
+                          { label: 'All',    sub: '−100 pts', fn: revAll, warn: true },
+                        ].map(({ label, sub, fn, warn }) => (
+                          <button key={label} onClick={fn} style={{
+                            display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left',
+                            background: 'none', border: 'none', fontFamily: FONTS.sans, fontSize: Math.round(16 * FONT_SCALE), fontWeight: 600,
+                            color: warn ? COLORS.error : COLORS.textPrimary, cursor: 'pointer',
+                          }}>
+                            {label} <span style={{ color: COLORS.textFaint, fontSize: Math.round(14 * FONT_SCALE) }}>({sub})</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {(() => {
+                    const wordReady = clue
+                      ? Array.from({ length: clue.len }, (_, i) => {
+                          const r2 = dir === 'across' ? clue.r : clue.r + i
+                          const c2 = dir === 'across' ? clue.c + i : clue.c
+                          return ug[r2]?.[c2] || ''
+                        }).every(Boolean)
+                      : false
+                    return (
+                      <button
+                        onClick={checkWord}
+                        style={{
+                          ...actionBtnUnderGrid,
+                          flex: 1, minWidth: 0,
+                          opacity: wordReady ? 1 : 0.4,
+                          cursor: wordReady ? 'pointer' : 'not-allowed',
+                        }}
+                        disabled={!wordReady}
+                        title={!clue ? 'Select a word first' : !wordReady ? 'Fill in every cell of the word before checking' : 'Check this word'}
+                      >
+                        Check
+                      </button>
+                    )
+                  })()}
+                </div>
                 {allFilled && !completed && (
-                  <button onClick={markComplete} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none' }}>
+                  <button onClick={markComplete} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none' }}>
                     Complete
                   </button>
                 )}
                 {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && (
-                  <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>
+                  <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>
                     Submit Early (−5 pts per empty)
                   </button>
                 )}
-              </>
+              </div>
             )}
           </div>
 
@@ -1213,24 +1214,26 @@ export default function GameScreen({
                   }))}
                 </div>
               </div>
-              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'row', gap: 8, marginTop: 20, paddingBottom: 0, width: visC * cellSize, maxWidth: '100%' }}>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8, marginTop: 20, paddingBottom: 0, width: visC * cellSize, maxWidth: '100%' }}>
                 {completed ? (
-                  <button onMouseDown={() => setShowAnswerGrid(true)} onMouseUp={() => setShowAnswerGrid(false)} onMouseLeave={() => setShowAnswerGrid(false)} onTouchStart={e => { e.preventDefault(); setShowAnswerGrid(true) }} onTouchEnd={() => setShowAnswerGrid(false)} onTouchCancel={() => setShowAnswerGrid(false)} style={{ ...actionBtnUnderGrid, flex: 1, background: showAnswerGrid ? COLORS.accent : COLORS.white, color: showAnswerGrid ? COLORS.white : COLORS.textPrimary, border: showAnswerGrid ? `2px solid ${COLORS.accent}` : `2px solid ${COLORS.borderDark}` }}>{showAnswerGrid ? '📋 Answer Key' : 'Hold to Compare Answer'}</button>
+                  <button onMouseDown={() => setShowAnswerGrid(true)} onMouseUp={() => setShowAnswerGrid(false)} onMouseLeave={() => setShowAnswerGrid(false)} onTouchStart={e => { e.preventDefault(); setShowAnswerGrid(true) }} onTouchEnd={() => setShowAnswerGrid(false)} onTouchCancel={() => setShowAnswerGrid(false)} style={{ ...actionBtnUnderGrid, width: '100%', background: showAnswerGrid ? COLORS.accent : COLORS.white, color: showAnswerGrid ? COLORS.white : COLORS.textPrimary, border: showAnswerGrid ? `2px solid ${COLORS.accent}` : `2px solid ${COLORS.borderDark}` }}>{showAnswerGrid ? '📋 Answer Key' : 'Hold to Compare Answer'}</button>
                 ) : (
                   <>
-                    <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex' }}>
-                      <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0 }}>Reveal ▾</button>
-                      {showRevMenu && (
-                        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, background: COLORS.white, border: `2px solid ${COLORS.borderDark}`, borderRadius: 8, overflow: 'hidden', zIndex: 50, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                          {[{ label: 'Letter', sub: `−${PENALTY.letter} pts`, fn: revLetter }, { label: 'Word', sub: `−${PENALTY.word} pts`, fn: revWord }, { label: 'All', sub: '−100 pts', fn: revAll, warn: true }].map(({ label, sub, fn, warn }) => (
-                            <button key={label} onClick={fn} style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', background: 'none', border: 'none', fontFamily: FONTS.sans, fontSize: Math.round(16 * FONT_SCALE), fontWeight: 600, color: warn ? COLORS.error : COLORS.textPrimary, cursor: 'pointer' }}>{label} <span style={{ color: COLORS.textFaint, fontSize: Math.round(14 * FONT_SCALE) }}>({sub})</span></button>
-                          ))}
-                        </div>
-                      )}
+                    <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                      <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex' }}>
+                        <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0 }}>Reveal ▾</button>
+                        {showRevMenu && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, background: COLORS.white, border: `2px solid ${COLORS.borderDark}`, borderRadius: 8, overflow: 'hidden', zIndex: 50, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                            {[{ label: 'Letter', sub: `−${PENALTY.letter} pts`, fn: revLetter }, { label: 'Word', sub: `−${PENALTY.word} pts`, fn: revWord }, { label: 'All', sub: '−100 pts', fn: revAll, warn: true }].map(({ label, sub, fn, warn }) => (
+                              <button key={label} onClick={fn} style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', background: 'none', border: 'none', fontFamily: FONTS.sans, fontSize: Math.round(16 * FONT_SCALE), fontWeight: 600, color: warn ? COLORS.error : COLORS.textPrimary, cursor: 'pointer' }}>{label} <span style={{ color: COLORS.textFaint, fontSize: Math.round(14 * FONT_SCALE) }}>({sub})</span></button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {(() => { const wordReady = clue ? Array.from({ length: clue.len }, (_, i) => { const r2 = dir === 'across' ? clue.r : clue.r + i; const c2 = dir === 'across' ? clue.c + i : clue.c; return ug[r2]?.[c2] || '' }).every(Boolean) : false; return <button onClick={checkWord} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0, opacity: wordReady ? 1 : 0.4, cursor: wordReady ? 'pointer' : 'not-allowed' }} disabled={!wordReady}>Check</button> })()}
                     </div>
-                    {(() => { const wordReady = clue ? Array.from({ length: clue.len }, (_, i) => { const r2 = dir === 'across' ? clue.r : clue.r + i; const c2 = dir === 'across' ? clue.c + i : clue.c; return ug[r2]?.[c2] || '' }).every(Boolean) : false; return <button onClick={checkWord} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0, opacity: wordReady ? 1 : 0.4, cursor: wordReady ? 'pointer' : 'not-allowed' }} disabled={!wordReady}>Check</button> })()}
-                    {allFilled && !completed && <button onClick={markComplete} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none' }}>Complete</button>}
-                    {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>Submit Early (−5 pts per empty)</button>}
+                    {allFilled && !completed && <button onClick={markComplete} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none' }}>Complete</button>}
+                    {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>Submit Early (−5 pts per empty)</button>}
                   </>
                 )}
               </div>
