@@ -627,30 +627,16 @@ export default function GameScreen({
           else if (dx > 50) setMobilePage(p => Math.max(0, p - 1))
         }}
       >
-        <div style={{
-          display: 'flex',
-          flexDirection: isMobile ? 'row' : 'column',
-          height: '100%',
-          transform: isMobile ? `translateX(-${mobilePage * 33.333}%)` : 'none',
-          transition: 'transform 0.25s ease',
-          width: isMobile ? '300%' : '100%',
-        }}>
-        <div style={{
-          flex: isMobile ? 'none' : 1,
-          width: isMobile ? '100%' : '100%',
-          minWidth: isMobile ? '300%' : 0,
-          display: 'flex',
-          flexDirection: 'row',
-          gap: isMobile ? 0 : 40,
-          overflow: 'hidden',
-        }}>
-
-        {/* ── Left: Clue bar + grid + action buttons (panel 0 on mobile) ───────── */}
-        <div style={{
-          flex: isMobile ? '0 0 33.333%' : 1,
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto',
-        }}>
+        {isMobile ? (
+          /* Mobile: 3 separate swipe panels — puzzle only, clues only, trivia only */
+          <div style={{
+            display: 'flex', flexDirection: 'row', height: '100%',
+            width: '300%', flexShrink: 0,
+            transform: `translateX(-${mobilePage * (100 / 3)}%)`,
+            transition: 'transform 0.25s ease',
+          }}>
+            {/* Panel 0: Puzzle only — grid + clue bar + keyboard + action buttons */}
+            <div style={{ width: '33.333%', flexShrink: 0, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
           {/* Green clue bar (above grid) — desktop only */}
           {clue && !isMobile && (
@@ -1028,204 +1014,6 @@ export default function GameScreen({
 
         </div>
 
-        {/* ── Right: Clue panel (desktop only) ─────────────────────────────────── */}
-        {!isMobile && (
-        <div style={{
-          flex: '0 0 400px',
-          minWidth: 350,
-          maxWidth: 460,
-          minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          background: COLORS.white,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 8,
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-          flexShrink: 0,
-        }}>
-          {/* Tab strip */}
-          <div style={{
-            display: 'flex',
-            borderBottom: `1px solid ${COLORS.border}`,
-            flexShrink: 0,
-          }}>
-            {(['clues', 'trivia']).map(tab => (
-              <button
-                key={tab}
-                onClick={() => setClueTab(tab)}
-                style={{
-                  flex: 1,
-                  padding: '10px 4px',
-                  border: 'none',
-                  background: clueTab === tab ? COLORS.accent : COLORS.white,
-                  color: clueTab === tab ? COLORS.white : COLORS.textMuted,
-                  fontWeight: 700,
-                  fontSize: Math.round(10 * FONT_SCALE),
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  fontFamily: FONTS.sans,
-                  borderBottom: clueTab === tab ? `2px solid ${COLORS.accent}` : '2px solid transparent',
-                  transition: 'all 0.12s',
-                }}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          {/* Tab content — scrolls inside container; minHeight: 0 enables flex overflow */}
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '12px 16px' }}>
-
-            {/* ── Clues tab (ACROSS + DOWN combined) ── */}
-            {clueTab === 'clues' && (
-              <div>
-                <div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 2, fontFamily: FONTS.sans }}>ACROSS</div>
-                {sortedAcross.map(cl => {
-                  const isActive = clue && clue.n === cl.n && dir === 'across'
-                  const filled = isClueFilled(ug, cl, 'across')
-                  return (
-                    <div
-                      key={`a-${cl.n}`}
-                      onClick={() => goToClue && goToClue(cl, 'across')}
-                      style={{
-                        padding: '5px 8px', cursor: 'pointer',
-                        background: isActive ? COLORS.clueHighlight : 'transparent',
-                        borderRadius: 3, marginBottom: 2,
-                        opacity: filled ? 0.55 : 1,
-                        color: filled ? COLORS.textMuted : COLORS.textPrimary,
-                      }}
-                    >
-                      <span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span>
-                      <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span>
-                    </div>
-                  )
-                })}
-                <div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 14, fontFamily: FONTS.sans }}>DOWN</div>
-                {sortedDown.length > 0 ? sortedDown.map(cl => {
-                  const isActive = clue && clue.n === cl.n && dir === 'down'
-                  const filled = isClueFilled(ug, cl, 'down')
-                  return (
-                    <div
-                      key={`d-${cl.n}`}
-                      onClick={() => goToClue && goToClue(cl, 'down')}
-                      style={{
-                        padding: '5px 8px', cursor: 'pointer',
-                        background: isActive ? COLORS.clueHighlight : 'transparent',
-                        borderRadius: 3, marginBottom: 2,
-                        opacity: filled ? 0.55 : 1,
-                        color: filled ? COLORS.textMuted : COLORS.textPrimary,
-                      }}
-                    >
-                      <span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span>
-                      <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span>
-                    </div>
-                  )
-                }) : (
-                  <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 4 }}>
-                    No down clues.
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ── TRIVIA tab ── */}
-            {clueTab === 'trivia' && (
-              completed ? (
-                /* Post-completion: show all trivia */
-                <div>
-                  {allTriviaItems.length === 0 && (
-                    <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 8 }}>
-                      No trivia available for this puzzle.
-                    </div>
-                  )}
-                  {allTriviaItems.map(({ cl, dir: d }, idx) => {
-                    const word = getWordStr(puzzle, cl, d)
-                    const correct = isWordCorrect(puzzle, ug, cl, d)
-                    return (
-                      <div key={`${cl.n}-${d}`} style={{
-                        marginBottom: 18,
-                        paddingBottom: 18,
-                        borderBottom: idx < allTriviaItems.length - 1 ? `1px solid ${COLORS.border}` : 'none',
-                      }}>
-                        {/* Word + badge */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-                          <span style={{
-                            fontFamily: FONTS.serif, fontSize: 15, fontWeight: 700,
-                            color: COLORS.textPrimary, letterSpacing: 0.5, textTransform: 'uppercase',
-                          }}>
-                            {word}
-                          </span>
-                          <span style={{
-                            fontSize: 10, fontFamily: FONTS.sans,
-                            background: '#f0f0f0', borderRadius: 4, padding: '2px 6px',
-                            color: COLORS.textMuted,
-                          }}>
-                            {cl.n}{d === 'across' ? 'A' : 'D'}
-                          </span>
-                          <span style={{
-                            fontSize: 10, fontFamily: FONTS.sans,
-                            background: correct ? '#dcfce7' : '#fee2e2',
-                            color: correct ? '#16a34a' : '#dc2626',
-                            borderRadius: 4, padding: '2px 6px', fontWeight: 700,
-                          }}>
-                            {correct ? '✓' : '✗'}
-                          </span>
-                        </div>
-                        {/* Clue */}
-                        <div style={{ fontSize: 11, color: COLORS.textMuted, fontFamily: FONTS.sans, marginBottom: 6, fontStyle: 'italic' }}>
-                          {cl.clue}
-                        </div>
-                        {/* Trivia */}
-                        <div style={{ fontSize: 13, color: '#444', fontFamily: FONTS.sans, lineHeight: 1.55 }}>
-                          {cl.trivia}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                /* During game: locked state */
-                <div style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', textAlign: 'center',
-                  padding: '32px 16px', gap: 12,
-                }}>
-                  <div style={{ fontSize: 36 }}>🔒</div>
-                  <div style={{ fontFamily: FONTS.serif, fontSize: 16, color: COLORS.textPrimary }}>
-                    Trivia Locked
-                  </div>
-                  <div style={{ fontSize: 13, color: COLORS.textMuted, fontFamily: FONTS.sans, lineHeight: 1.5 }}>
-                    Complete the crossword and submit your score to unlock the story behind every word.
-                  </div>
-                </div>
-              )
-            )}
-
-            {/* Direction toggle — shown in ACROSS / DOWN tabs when cell is at an intersection */}
-            {clueTab !== 'trivia' && clue && sc && (() => {
-              const pair = pairFor(puzzle, sc[0], sc[1])
-              const hasBoth = pair.across && pair.down
-              return hasBoth ? (
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    onClick={flipDir}
-                    style={{
-                      background: 'none', border: 'none', color: COLORS.accent,
-                      fontSize: 12, cursor: 'pointer', fontFamily: FONTS.sans,
-                      textDecoration: 'underline',
-                    }}
-                  >
-                    {dir === 'across' ? '↕ Switch to Down' : '↔ Switch to Across'}
-                  </button>
-                </div>
-              ) : null
-            })()}
-          </div>
-        </div>
-        )}
-
         {/* ── Mobile: Clues panel (swipe panel 1) ─────────────────────────────── */}
         {isMobile && (
           <div style={{
@@ -1334,8 +1122,90 @@ export default function GameScreen({
             </div>
           </div>
         )}
-        </div>
-        </div>
+          </div>
+        ) : (
+          /* Desktop: left column + right clue panel */
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'row', gap: 40, minHeight: 0, overflow: 'hidden' }}>
+            {/* Left column - puzzle area */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0, minHeight: 0, overflowY: 'auto' }}>
+              {clue && (
+                <div style={{ width: visC * cellSize, maxWidth: '100%', background: COLORS.accent, color: COLORS.white, padding: '12px 16px', borderRadius: '8px 8px 0 0', marginBottom: 0, flexShrink: 0 }}>
+                  <span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600 }}>{clue.n} {dir === 'across' ? 'Across' : 'Down'}: {clue.clue}</span>
+                </div>
+              )}
+              <div ref={containerRef} style={{ flexShrink: 0, minWidth: Math.min(700, visC * 42), minHeight: visR * cellSize, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+                <div style={{ display: 'inline-grid', gridTemplateColumns: `repeat(${visC}, ${cellSize}px)`, gridTemplateRows: `repeat(${visR}, ${cellSize}px)`, border: `2px solid ${COLORS.textPrimary}`, background: COLORS.textPrimary, flexShrink: 0 }}>
+                  {Array.from({ length: visR }, (_, ri) => Array.from({ length: visC }, (_, ci) => {
+                    const r = ri + r0, c = ci + c0
+                    const v = puzzle.grid[r]?.[c]
+                    const bg = cellBg(r, c)
+                    const n = numAt(puzzle, r, c)
+                    const letter = showAnswerGrid ? (puzzle.grid[r]?.[c] || '') : (ug[r]?.[c] || '')
+                    if (!v) return <div key={`${r}-${c}`} style={{ width: cellSize, height: cellSize, background: COLORS.textPrimary, border: 'none' }} />
+                    return (
+                      <div key={`${r}-${c}`} onClick={() => { if (!completed) tap(r, c) }} style={{ width: cellSize, height: cellSize, background: bg, border: '1px solid #555', position: 'relative', display: 'flex', flexDirection: 'column', cursor: completed ? 'default' : 'pointer', transition: 'background 0.08s', overflow: 'hidden' }}>
+                        <div style={{ height: Math.round(cellSize * 0.3), flexShrink: 0, display: 'flex', alignItems: 'flex-start', paddingLeft: 2, paddingTop: 1 }}>
+                          {n != null && n !== 0 && <span style={{ fontSize: Math.max(7, Math.round(cellSize * 0.24)), fontWeight: 700, lineHeight: 1, fontFamily: FONTS.sans, color: (showAnswerGrid || bg === '#22c55e' || bg === '#ef4444') ? 'rgba(255,255,255,0.8)' : '#444' }}>{n}</span>}
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ fontSize: Math.round(cellSize * 0.48), fontWeight: 700, fontFamily: FONTS.serif, color: cellTextColor(r, c), lineHeight: 1, textTransform: 'uppercase' }}>{letter}</span>
+                        </div>
+                      </div>
+                    )
+                  }))}
+                </div>
+              </div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'row', gap: 8, marginTop: 20, paddingBottom: 0, width: visC * cellSize, maxWidth: '100%' }}>
+                {completed ? (
+                  <button onMouseDown={() => setShowAnswerGrid(true)} onMouseUp={() => setShowAnswerGrid(false)} onMouseLeave={() => setShowAnswerGrid(false)} onTouchStart={e => { e.preventDefault(); setShowAnswerGrid(true) }} onTouchEnd={() => setShowAnswerGrid(false)} onTouchCancel={() => setShowAnswerGrid(false)} style={{ ...actionBtnUnderGrid, flex: 1, background: showAnswerGrid ? COLORS.accent : COLORS.white, color: showAnswerGrid ? COLORS.white : COLORS.textPrimary, border: showAnswerGrid ? `2px solid ${COLORS.accent}` : `2px solid ${COLORS.borderDark}` }}>{showAnswerGrid ? '📋 Answer Key' : 'Hold to Compare Answer'}</button>
+                ) : (
+                  <>
+                    <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex' }}>
+                      <button onClick={() => setShowRevMenu(v => !v)} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0 }}>Reveal ▾</button>
+                      {showRevMenu && (
+                        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, background: COLORS.white, border: `2px solid ${COLORS.borderDark}`, borderRadius: 8, overflow: 'hidden', zIndex: 50, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                          {[{ label: 'Letter', sub: `−${PENALTY.letter} pts`, fn: revLetter }, { label: 'Word', sub: `−${PENALTY.word} pts`, fn: revWord }, { label: 'All', sub: '−100 pts', fn: revAll, warn: true }].map(({ label, sub, fn, warn }) => (
+                            <button key={label} onClick={fn} style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', background: 'none', border: 'none', fontFamily: FONTS.sans, fontSize: Math.round(16 * FONT_SCALE), fontWeight: 600, color: warn ? COLORS.error : COLORS.textPrimary, cursor: 'pointer' }}>{label} <span style={{ color: COLORS.textFaint, fontSize: Math.round(14 * FONT_SCALE) }}>({sub})</span></button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {(() => { const wordReady = clue ? Array.from({ length: clue.len }, (_, i) => { const r2 = dir === 'across' ? clue.r : clue.r + i; const c2 = dir === 'across' ? clue.c + i : clue.c; return ug[r2]?.[c2] || '' }).every(Boolean) : false; return <button onClick={checkWord} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0, opacity: wordReady ? 1 : 0.4, cursor: wordReady ? 'pointer' : 'not-allowed' }} disabled={!wordReady}>Check</button> })()}
+                    {allFilled && !completed && <button onClick={markComplete} style={{ ...actionBtnUnderGrid, flex: '1 1 0', minWidth: 0, background: COLORS.accent, color: COLORS.white, border: 'none' }}>Complete</button>}
+                  </>
+                )}
+              </div>
+              {completed && (() => {
+                const allClues = [...puzzle.clues.across, ...puzzle.clues.down]
+                const wordsCorrect = allClues.filter(cl => { const d = puzzle.clues.across.includes(cl) ? 'across' : 'down'; return isWordCorrect(puzzle, ug, cl, d) }).length
+                const wordsWrong = allClues.length - wordsCorrect
+                const finalScore = submittedScore ?? score
+                return (
+                  <div style={{ marginTop: 14, width: visC * cellSize, maxWidth: '100%' }}>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                      <div style={{ flex: 1, background: '#f0fdf4', borderRadius: 12, border: '1.5px solid #bbf7d0', padding: '12px 8px', textAlign: 'center' }}><div style={{ fontFamily: FONTS.serif, fontSize: 30, color: '#16a34a', fontWeight: 700 }}>{wordsCorrect}</div><div style={{ fontSize: 10, color: '#16a34a', fontFamily: FONTS.sans, fontWeight: 700, marginTop: 4 }}>Correct</div></div>
+                      <div style={{ flex: 1, background: wordsWrong > 0 ? '#fef2f2' : '#f0fdf4', borderRadius: 12, border: `1.5px solid ${wordsWrong > 0 ? '#fecaca' : '#bbf7d0'}`, padding: '12px 8px', textAlign: 'center' }}><div style={{ fontFamily: FONTS.serif, fontSize: 30, color: wordsWrong > 0 ? '#dc2626' : '#16a34a', fontWeight: 700 }}>{wordsWrong}</div><div style={{ fontSize: 10, color: wordsWrong > 0 ? '#dc2626' : '#16a34a', fontFamily: FONTS.sans, fontWeight: 700, marginTop: 4 }}>Wrong</div></div>
+                      <div style={{ flex: 1, background: '#fffbeb', borderRadius: 12, border: '1.5px solid #fde68a', padding: '12px 8px', textAlign: 'center' }}><div style={{ fontFamily: FONTS.serif, fontSize: 30, color: '#b45309', fontWeight: 700 }}>{finalScore}</div><div style={{ fontSize: 10, color: '#b45309', fontFamily: FONTS.sans, fontWeight: 700, marginTop: 4 }}>Score/100</div></div>
+                    </div>
+                    <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: '14px 16px' }}>
+                      <div style={{ fontSize: 10, letterSpacing: 1.4, color: COLORS.textMuted, fontFamily: FONTS.sans, marginBottom: 12, textAlign: 'center' }}>Share Your Result</div>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>{shareIcons.map(({ icon, label, key, bg }) => <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}><button onClick={() => handleShare(key)} style={{ width: 44, height: 44, borderRadius: '50%', background: bg, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{icon}</button><span style={{ fontSize: 9, color: COLORS.textMuted, fontFamily: FONTS.sans }}>{label}</span></div>)}</div>
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+            {/* Right column */}
+            <div style={{ flex: '0 0 400px', minWidth: 350, maxWidth: 460, minHeight: 0, display: 'flex', flexDirection: 'column', background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', flexShrink: 0 }}>
+              <div style={{ display: 'flex', borderBottom: `1px solid ${COLORS.border}`, flexShrink: 0 }}>{(['clues', 'trivia']).map(tab => <button key={tab} onClick={() => setClueTab(tab)} style={{ flex: 1, padding: '10px 4px', border: 'none', background: clueTab === tab ? COLORS.accent : COLORS.white, color: clueTab === tab ? COLORS.white : COLORS.textMuted, fontWeight: 700, fontSize: Math.round(10 * FONT_SCALE), letterSpacing: 1, textTransform: 'uppercase', cursor: 'pointer', fontFamily: FONTS.sans, borderBottom: clueTab === tab ? `2px solid ${COLORS.accent}` : '2px solid transparent' }}>{tab}</button>)}</div>
+              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '12px 16px' }}>
+                {clueTab === 'clues' && <div><div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 2, fontFamily: FONTS.sans }}>ACROSS</div>{sortedAcross.map(cl => { const isActive = clue && clue.n === cl.n && dir === 'across'; const filled = isClueFilled(ug, cl, 'across'); return <div key={`a-${cl.n}`} onClick={() => goToClue && goToClue(cl, 'across')} style={{ padding: '5px 8px', cursor: 'pointer', background: isActive ? COLORS.clueHighlight : 'transparent', borderRadius: 3, marginBottom: 2, opacity: filled ? 0.55 : 1, color: filled ? COLORS.textMuted : COLORS.textPrimary }}><span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span><span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span></div>})}<div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 14, fontFamily: FONTS.sans }}>DOWN</div>{sortedDown.length > 0 ? sortedDown.map(cl => { const isActive = clue && clue.n === cl.n && dir === 'down'; const filled = isClueFilled(ug, cl, 'down'); return <div key={`d-${cl.n}`} onClick={() => goToClue && goToClue(cl, 'down')} style={{ padding: '5px 8px', cursor: 'pointer', background: isActive ? COLORS.clueHighlight : 'transparent', borderRadius: 3, marginBottom: 2, opacity: filled ? 0.55 : 1, color: filled ? COLORS.textMuted : COLORS.textPrimary }}><span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span><span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span></div>}) : <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 4 }}>No down clues.</div>}</div>}
+                {clueTab === 'trivia' && (completed ? <div>{allTriviaItems.length === 0 && <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 8 }}>No trivia available.</div>}{allTriviaItems.map(({ cl, dir: d }, idx) => { const word = getWordStr(puzzle, cl, d); const correct = isWordCorrect(puzzle, ug, cl, d); return <div key={`${cl.n}-${d}`} style={{ marginBottom: 18, paddingBottom: 18, borderBottom: idx < allTriviaItems.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}><div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}><span style={{ fontFamily: FONTS.serif, fontSize: 15, fontWeight: 700, color: COLORS.textPrimary, letterSpacing: 0.5, textTransform: 'uppercase' }}>{word}</span><span style={{ fontSize: 10, fontFamily: FONTS.sans, background: '#f0f0f0', borderRadius: 4, padding: '2px 6px', color: COLORS.textMuted }}>{cl.n}{d === 'across' ? 'A' : 'D'}</span><span style={{ fontSize: 10, fontFamily: FONTS.sans, background: correct ? '#dcfce7' : '#fee2e2', color: correct ? '#16a34a' : '#dc2626', borderRadius: 4, padding: '2px 6px', fontWeight: 700 }}>{correct ? '✓' : '✗'}</span></div><div style={{ fontSize: 11, color: COLORS.textMuted, fontFamily: FONTS.sans, marginBottom: 6, fontStyle: 'italic' }}>{cl.clue}</div><div style={{ fontSize: 13, color: '#444', fontFamily: FONTS.sans, lineHeight: 1.55 }}>{cl.trivia}</div></div>})}</div> : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '32px 16px', gap: 12 }}><div style={{ fontSize: 36 }}>🔒</div><div style={{ fontFamily: FONTS.serif, fontSize: 16, color: COLORS.textPrimary }}>Trivia Locked</div><div style={{ fontSize: 13, color: COLORS.textMuted, fontFamily: FONTS.sans, lineHeight: 1.5 }}>Complete the crossword to unlock.</div></div>)}
+                {clueTab !== 'trivia' && clue && sc && (() => { const pair = pairFor(puzzle, sc[0], sc[1]); return pair.across && pair.down ? <div style={{ marginTop: 12 }}><button onClick={flipDir} style={{ background: 'none', border: 'none', color: COLORS.accent, fontSize: 12, cursor: 'pointer', fontFamily: FONTS.sans, textDecoration: 'underline' }}>{dir === 'across' ? '↕ Switch to Down' : '↔ Switch to Across'}</button></div> : null })()}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile: custom keyboard replaces system — no hidden input */}
