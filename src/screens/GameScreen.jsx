@@ -485,8 +485,8 @@ export default function GameScreen({
       }),
     }}>
 
-      {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div style={{ background: COLORS.accent, padding: '10px 16px', flexShrink: 0, borderBottom: `1px solid ${COLORS.accentLight}`, position: 'relative' }}>
+      {/* ── Header (safe-area for iPhone notch when PWA) ─────────────────────── */}
+      <div style={{ background: COLORS.accent, paddingTop: S.SAFE_TOP, paddingBottom: 10, paddingLeft: 16, paddingRight: 16, flexShrink: 0, borderBottom: `1px solid ${COLORS.accentLight}`, position: 'relative' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', width: '100%', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button onClick={goBack} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.9)', fontSize: 18, cursor: 'pointer', padding: 4, lineHeight: 1, flexShrink: 0 }}>
             ← Back

@@ -30,7 +30,12 @@ export const FONTS = {
 /** Scale factor for font sizes (1.3 = 30% larger) */
 export const FONT_SCALE = 1.3
 
+
+/** Top padding for headers: accounts for iPhone notch when opened as PWA. */
+const SAFE_TOP = 'calc(env(safe-area-inset-top, 0px) + 10px)'
+
 export const S = {
+  SAFE_TOP,
   // Full-page background wrapper
   pageRoot: {
     background: COLORS.bg,

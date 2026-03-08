@@ -26,9 +26,9 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
   return (
     <div style={{ ...S.screen, background: COLORS.bg }}>
 
-      {/* ── Header: DF logo, Daily Rankings, Timer, Menu ── */}
+      {/* ── Header (safe-area for iPhone notch when PWA) ── */}
       <div style={{ background: COLORS.headerBg }}>
-        <div style={{ ...S.contentWrapWide, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ ...S.contentWrapWide, paddingTop: S.SAFE_TOP, paddingBottom: 12, paddingLeft: 16, paddingRight: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ fontFamily: FONTS.serif, fontSize: 22, fontWeight: 700, color: COLORS.white, letterSpacing: 0.5 }}>
             DF
           </div>

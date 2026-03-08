@@ -7,9 +7,9 @@ export default function LeaderboardScreen({ board, cd, user, score, goBack, onLo
   return (
     <div style={{ ...S.screen, background: COLORS.bg }}>
 
-      {/* ── Header ── */}
+      {/* ── Header (safe-area for iPhone notch when PWA) ── */}
       <div style={{ background: COLORS.headerBg }}>
-        <div style={{ ...S.contentWrapWide, padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ ...S.contentWrapWide, paddingTop: S.SAFE_TOP, paddingBottom: 14, paddingLeft: 24, paddingRight: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <button onClick={goBack} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: 20, cursor: 'pointer', fontFamily: FONTS.sans, lineHeight: 1 }}>←</button>
             <div style={{ fontFamily: FONTS.serif, fontSize: 20, color: COLORS.white }}>
