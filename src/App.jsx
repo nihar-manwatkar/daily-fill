@@ -27,36 +27,7 @@ export default function App() {
     return <AdminScreen />
   }
 
-  // ── Recovery password (Supabase reset link) ─────────────────────────────────
-  if (showRecoveryPassword) {
-    return (
-      <RecoveryPasswordScreen
-        newPassword={newPassword}
-        setNewPassword={setNewPassword}
-        confirmPassword={confirmNewPassword}
-        setConfirmPassword={setConfirmNewPassword}
-        error={authError}
-        setError={setAuthError}
-        onSubmit={async () => {
-          try {
-            await updatePassword(newPassword)
-            if (typeof window !== 'undefined') {
-              window.history.replaceState(null, '', window.location.pathname + window.location.search)
-            }
-            setNewPassword('')
-            setConfirmNewPassword('')
-            setAuthError('')
-            setShowRecoveryPassword(false)
-            setScreen('auth')
-          } catch (err) {
-            setAuthError(err?.message || 'Failed to update password')
-          }
-        }}
-      />
-    )
-  }
-
-  // ── Navigation ──────────────────────────────────────────────────────────────
+  // ── All state must be declared before any conditional returns ───────────────
   const [screen, setScreen] = useState('splash')
 
   // ── Auth ────────────────────────────────────────────────────────────────────
@@ -107,6 +78,35 @@ export default function App() {
   const [showRulesModal, setShowRulesModal] = useState(false)
   const [leaderboard, setLeaderboard] = useState([])
   const [showRecoveryPassword, setShowRecoveryPassword] = useState(false)
+
+  // ── Recovery password (Supabase reset link) — after all state declared ───────
+  if (showRecoveryPassword) {
+    return (
+      <RecoveryPasswordScreen
+        newPassword={newPassword}
+        setNewPassword={setNewPassword}
+        confirmPassword={confirmNewPassword}
+        setConfirmPassword={setConfirmNewPassword}
+        error={authError}
+        setError={setAuthError}
+        onSubmit={async () => {
+          try {
+            await updatePassword(newPassword)
+            if (typeof window !== 'undefined') {
+              window.history.replaceState(null, '', window.location.pathname + window.location.search)
+            }
+            setNewPassword('')
+            setConfirmNewPassword('')
+            setAuthError('')
+            setShowRecoveryPassword(false)
+            setScreen('auth')
+          } catch (err) {
+            setAuthError(err?.message || 'Failed to update password')
+          }
+        }}
+      />
+    )
+  }
 
   // ── Countdown timer ─────────────────────────────────────────────────────────
   const [cd, setCd] = useState('00:00:00')
