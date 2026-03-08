@@ -418,7 +418,7 @@ export default function GameScreen({
     [puzzle.clues.across]
   )
   const sortedDown = useMemo(
-    () => [...puzzle.clues.down].sort((a, b) => (a.n - b.n) || (a.c - b.c) || (a.r - b.r)),
+    () => [...puzzle.clues.down].sort((a, b) => (a.r - b.r) || (a.c - b.c)),
     [puzzle.clues.down]
   )
 

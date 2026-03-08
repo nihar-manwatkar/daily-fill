@@ -354,7 +354,7 @@ export default function App() {
     }
 
     const sortedAcross = [...pz.clues.across].sort((a, b) => a.n - b.n)
-    const sortedDown   = [...pz.clues.down].sort((a, b) => a.n - b.n)
+    const sortedDown   = [...pz.clues.down].sort((a, b) => (a.r - b.r) || (a.c - b.c))
 
     if (d === 'across') {
       // Step 1: still inside current word — move to next cell
