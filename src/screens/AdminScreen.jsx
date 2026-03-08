@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import { FaTrash } from 'react-icons/fa'
 import { COLORS, FONTS } from '../utils/styles.js'
 import PuzzleCreatorTab from './PuzzleCreatorTab.jsx'
 import { getIstDatePlusDays } from '../utils/helpers.js'
-import { getRegisteredUsersForAdmin } from '../api/auth.js'
+import { getRegisteredUsersForAdmin, deleteUserForAdmin, triggerDeployForAdmin } from '../api/auth.js'
 import { isSupabaseConfigured } from '../lib/supabase.js'
 import { getPuzzleForDate, getAdminPuzzleEdits, setAdminPuzzleEdits } from '../data/puzzleCalendar.js'
 
@@ -59,6 +60,9 @@ export default function AdminScreen() {
   const [showPhone, setShowPhone] = useState({})
   const [users,    setUsers]    = useState([])
   const [puzzleStats, setPuzzleStats] = useState([])
+  const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [deployStatus, setDeployStatus] = useState(null)
+  const [hoveredDelete, setHoveredDelete] = useState(null)
 
   const ADMIN_PW = 'dailyfill2026'
 
@@ -142,6 +146,28 @@ export default function AdminScreen() {
 
   const togglePhone = id => setShowPhone(prev => ({ ...prev, [id]: !prev[id] }))
 
+  const handleDeleteUser = useCallback(async (u) => {
+    try {
+      await deleteUserForAdmin(u.id, pw)
+      setDeleteConfirm(null)
+      refreshUsers()
+    } catch (e) {
+      setDeleteConfirm(prev => prev ? { ...prev, error: e.message } : null)
+    }
+  }, [pw, refreshUsers])
+
+  const handleDeploy = useCallback(async () => {
+    setDeployStatus('loading')
+    try {
+      await triggerDeployForAdmin(pw)
+      setDeployStatus('success')
+      setTimeout(() => setDeployStatus(null), 5000)
+    } catch (e) {
+      setDeployStatus(e.message)
+      setTimeout(() => setDeployStatus(null), 6000)
+    }
+  }, [pw])
+
   // ─────────────────────────────────────────────────────────────────────────────
   // PASSWORD GATE
   // ─────────────────────────────────────────────────────────────────────────────
@@ -186,7 +212,26 @@ export default function AdminScreen() {
               <div style={styles.topbarSub}>Internal Dashboard · {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
             </div>
           </div>
-          <button onClick={() => setAuthed(false)} style={styles.logoutBtn}>Sign out</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button
+              onClick={handleDeploy}
+              disabled={deployStatus === 'loading'}
+              style={{
+                ...styles.deployBtn,
+                opacity: deployStatus === 'loading' ? 0.6 : 1,
+              }}
+              title="Trigger a new deployment on Vercel"
+            >
+              {deployStatus === 'loading' ? '⏳ Deploying…' : '🚀 Deploy to Vercel'}
+            </button>
+            {deployStatus === 'success' && (
+              <span style={{ fontSize: 12, color: COLORS.successText, fontWeight: 600 }}>✓ Deploy triggered</span>
+            )}
+            {deployStatus && deployStatus !== 'loading' && deployStatus !== 'success' && (
+              <span style={{ fontSize: 12, color: COLORS.error }}>{deployStatus}</span>
+            )}
+            <button onClick={() => setAuthed(false)} style={styles.logoutBtn}>Sign out</button>
+          </div>
         </div>
       </div>
 
@@ -260,13 +305,14 @@ export default function AdminScreen() {
                         { key: 'bestScore',  label: 'Best Score'    },
                         { key: 'avgScore',   label: 'Avg Score'     },
                         { key: 'lastActive', label: 'Last Active'   },
+                        { key: '_actions',   label: ''              },
                       ].map(col => (
                         <th
                           key={col.key}
-                          onClick={() => col.key !== 'email' && handleSort(col.key)}
+                          onClick={() => !['email', '_actions'].includes(col.key) && handleSort(col.key)}
                           style={{
                             ...styles.th,
-                            cursor: col.key !== 'email' ? 'pointer' : 'default',
+                            cursor: !['email', '_actions'].includes(col.key) ? 'pointer' : 'default',
                           }}
                         >
                           {col.label}
@@ -305,6 +351,22 @@ export default function AdminScreen() {
                         </td>
                         <td style={{ ...styles.td, color: u.lastActive === todayStr ? COLORS.successText : COLORS.textMuted }}>
                           {u.lastActive === todayStr ? '🟢 Today' : u.lastActive}
+                        </td>
+                        <td style={styles.td}>
+                          {isSupabaseConfigured() && (
+                            <button
+                              onClick={() => setDeleteConfirm(u)}
+                              onMouseEnter={() => setHoveredDelete(u.id)}
+                              onMouseLeave={() => setHoveredDelete(null)}
+                              style={{
+                                ...styles.deleteBtn,
+                                ...(hoveredDelete === u.id ? styles.deleteBtnHover : {}),
+                              }}
+                              title="Delete user permanently"
+                            >
+                              <FaTrash size={12} />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -532,6 +594,30 @@ export default function AdminScreen() {
           <PuzzleCreatorTab />
         )}
       </div>
+
+      {/* ── Delete user confirm modal ── */}
+      {deleteConfirm && (
+        <div
+          style={styles.modalOverlay}
+          onClick={e => { if (e.target === e.currentTarget) setDeleteConfirm(null) }}
+        >
+          <div style={styles.modalCard}>
+            <div style={styles.modalTitle}>Delete user?</div>
+            <div style={{ marginBottom: 16, color: COLORS.textMid, fontSize: 14 }}>
+              <strong>{deleteConfirm.username}</strong> ({deleteConfirm.email}) will be permanently removed. Their scores will be deleted. This cannot be undone.
+            </div>
+            {deleteConfirm.error && (
+              <div style={{ marginBottom: 12, padding: 10, background: '#fde8e6', borderRadius: 8, fontSize: 13, color: COLORS.error }}>
+                {deleteConfirm.error}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setDeleteConfirm(null)} style={styles.modalCancelBtn}>Cancel</button>
+              <button onClick={() => handleDeleteUser(deleteConfirm)} style={styles.modalDeleteBtn}>Delete permanently</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1042,6 +1128,80 @@ const styles = {
     borderRadius: 6,
     padding: '6px 14px',
     fontSize: 13,
+    cursor: 'pointer',
+    fontFamily: FONTS.sans,
+  },
+  deployBtn: {
+    background: COLORS.accent,
+    border: 'none',
+    color: '#fff',
+    borderRadius: 6,
+    padding: '6px 14px',
+    fontSize: 13,
+    fontWeight: 600,
+    cursor: 'pointer',
+    fontFamily: FONTS.sans,
+  },
+  deleteBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 28,
+    height: 28,
+    padding: 0,
+    background: 'transparent',
+    border: '1px solid #f0ccc8',
+    borderRadius: 6,
+    color: COLORS.error,
+    cursor: 'pointer',
+    fontFamily: FONTS.sans,
+  },
+  deleteBtnHover: {
+    background: '#fde8e6',
+    borderColor: COLORS.error,
+  },
+  modalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: 20,
+  },
+  modalCard: {
+    background: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    maxWidth: 420,
+    width: '100%',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 700,
+    color: COLORS.textPrimary,
+    marginBottom: 12,
+    fontFamily: FONTS.sans,
+  },
+  modalCancelBtn: {
+    padding: '8px 18px',
+    background: '#f0f0f0',
+    border: '1px solid #ddd',
+    borderRadius: 8,
+    fontSize: 14,
+    cursor: 'pointer',
+    fontFamily: FONTS.sans,
+  },
+  modalDeleteBtn: {
+    padding: '8px 18px',
+    background: COLORS.error,
+    border: 'none',
+    color: '#fff',
+    borderRadius: 8,
+    fontSize: 14,
+    fontWeight: 600,
     cursor: 'pointer',
     fontFamily: FONTS.sans,
   },

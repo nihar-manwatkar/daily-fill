@@ -175,3 +175,29 @@ export async function getRegisteredUsersForAdmin(adminPassword = '') {
   const data = await fetchJson(`${API}/auth/users`)
   return (data.users || []).map(u => ({ ...u, phone: u.email }))
 }
+
+/** Delete user (Admin only) — requires admin password. Uses Supabase Auth Admin when configured. */
+export async function deleteUserForAdmin(userId, adminPassword = '') {
+  const r = await fetch('/api/admin/delete-user', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Password': adminPassword || '',
+    },
+    body: JSON.stringify({ userId }),
+  })
+  const data = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(data.error || 'Failed to delete user')
+  return data
+}
+
+/** Trigger Vercel redeploy (Admin only) — requires admin password and VERCEL_DEPLOY_HOOK_URL env. */
+export async function triggerDeployForAdmin(adminPassword = '') {
+  const r = await fetch('/api/admin/deploy', {
+    method: 'POST',
+    headers: { 'X-Admin-Password': adminPassword || '' },
+  })
+  const data = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(data.error || 'Failed to trigger deploy')
+  return data
+}
