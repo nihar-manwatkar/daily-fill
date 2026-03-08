@@ -411,6 +411,22 @@ export default function GameScreen({
     [puzzle.clues.down]
   )
 
+  // Sequential clue list for mobile: across first, then down (for prev/next navigation)
+  const sequentialClues = useMemo(
+    () => [
+      ...sortedAcross.map(cl => ({ cl, dir: 'across' })),
+      ...sortedDown.map(cl => ({ cl, dir: 'down' })),
+    ],
+    [sortedAcross, sortedDown]
+  )
+  const currentClueIndex = clue
+    ? sequentialClues.findIndex(
+        ({ cl, dir: d }) => cl.n === clue.n && d === dir
+      )
+    : -1
+  const hasPrevClue = currentClueIndex > 0
+  const hasNextClue = currentClueIndex >= 0 && currentClueIndex < sequentialClues.length - 1
+
   // ── Trivia data for the clue panel tab ──────────────────────────────────
   const allTriviaItems = [
     ...sortedAcross.map(cl => ({ cl, dir: 'across' })),
@@ -581,8 +597,8 @@ export default function GameScreen({
         {/* ── Left: Clue bar + grid + action buttons ─────────────────────────── */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto' }}>
 
-          {/* Green clue bar (above grid) — shows selected clue */}
-          {clue && (
+          {/* Green clue bar (above grid) — desktop only */}
+          {clue && !isMobile && (
             <div style={{
               width: visC * cellSize, maxWidth: '100%',
               background: COLORS.accent,
@@ -698,6 +714,60 @@ export default function GameScreen({
               )}
             </div>
           </div>
+
+          {/* Mobile: Clue bar below grid with prev/next arrows */}
+          {isMobile && clue && (
+            <div style={{
+              width: visC * cellSize, maxWidth: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              background: COLORS.accent,
+              color: COLORS.white,
+              padding: '14px 12px',
+              borderRadius: 8,
+              marginTop: 16,
+              flexShrink: 0,
+            }}>
+              <button
+                onClick={() => hasPrevClue && goToClue(sequentialClues[currentClueIndex - 1].cl, sequentialClues[currentClueIndex - 1].dir)}
+                disabled={!hasPrevClue}
+                style={{
+                  width: 40, height: 40, flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: hasPrevClue ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)',
+                  border: 'none', borderRadius: 8,
+                  color: COLORS.white, cursor: hasPrevClue ? 'pointer' : 'not-allowed',
+                  opacity: hasPrevClue ? 1 : 0.5,
+                }}
+                aria-label="Previous clue"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <div style={{ flex: 1, minWidth: 0, fontSize: Math.round(15 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>
+                {clue.n} {dir === 'across' ? 'Across' : 'Down'}: {clue.clue}
+              </div>
+              <button
+                onClick={() => hasNextClue && goToClue(sequentialClues[currentClueIndex + 1].cl, sequentialClues[currentClueIndex + 1].dir)}
+                disabled={!hasNextClue}
+                style={{
+                  width: 40, height: 40, flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: hasNextClue ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)',
+                  border: 'none', borderRadius: 8,
+                  color: COLORS.white, cursor: hasNextClue ? 'pointer' : 'not-allowed',
+                  opacity: hasNextClue ? 1 : 0.5,
+                }}
+                aria-label="Next clue"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* ── Action buttons / answer toggle ──────────────────────────────── */}
           <div style={{
