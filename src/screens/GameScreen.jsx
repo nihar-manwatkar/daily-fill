@@ -628,15 +628,37 @@ export default function GameScreen({
         }}
       >
         {isMobile ? (
-          /* Mobile: 3 separate swipe panels — puzzle only, clues only, trivia only */
+          /* Mobile: 3 separate swipe panels — use 100vw per panel for iOS Safari compatibility */
           <div style={{
-            display: 'flex', flexDirection: 'row', height: '100%',
-            width: '300%', flexShrink: 0,
-            transform: `translateX(-${mobilePage * (100 / 3)}%)`,
-            transition: 'transform 0.25s ease',
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
           }}>
-            {/* Panel 0: Puzzle only — grid + clue bar + keyboard + action buttons */}
-            <div style={{ width: '33.333%', flexShrink: 0, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'row',
+              height: '100%',
+              width: '300vw',
+              flexShrink: 0,
+              transform: `translate3d(-${mobilePage * 100}vw, 0, 0)`,
+              transition: 'transform 0.25s ease',
+              willChange: 'transform',
+              WebkitBackfaceVisibility: 'hidden',
+            }}>
+              {/* Panel 0: Puzzle only — grid + clue bar + keyboard + action buttons */}
+              <div style={{
+                width: '100vw',
+                minWidth: '100vw',
+                flexShrink: 0,
+                minHeight: 0,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                WebkitOverflowScrolling: 'touch',
+              }}>
 
           {/* Green clue bar (above grid) — desktop only */}
           {clue && !isMobile && (
@@ -1017,12 +1039,12 @@ export default function GameScreen({
         {/* ── Mobile: Clues panel (swipe panel 1) ─────────────────────────────── */}
         {isMobile && (
           <div style={{
-            width: '33.333%', flexShrink: 0, minHeight: 0,
+            width: '100vw', minWidth: '100vw', flexShrink: 0, minHeight: 0,
             display: 'flex', flexDirection: 'column',
             background: COLORS.white, border: `1px solid ${COLORS.border}`,
             borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
           }}>
-            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '12px 16px', WebkitOverflowScrolling: 'touch' }}>
               <div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 2, fontFamily: FONTS.sans }}>ACROSS</div>
               {sortedAcross.map(cl => {
                 const isActive = clue && clue.n === cl.n && dir === 'across'
@@ -1085,12 +1107,12 @@ export default function GameScreen({
         {/* ── Mobile: Trivia panel (swipe panel 2) ─────────────────────────────── */}
         {isMobile && (
           <div style={{
-            width: '33.333%', flexShrink: 0, minHeight: 0,
+            width: '100vw', minWidth: '100vw', flexShrink: 0, minHeight: 0,
             display: 'flex', flexDirection: 'column',
             background: COLORS.white, border: `1px solid ${COLORS.border}`,
             borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
           }}>
-            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '12px 16px', WebkitOverflowScrolling: 'touch' }}>
               {completed ? (
                 <div>
                   {allTriviaItems.length === 0 && (
@@ -1122,6 +1144,7 @@ export default function GameScreen({
             </div>
           </div>
         )}
+            </div>
           </div>
         ) : (
           /* Desktop: left column + right clue panel */

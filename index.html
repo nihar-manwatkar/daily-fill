@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="description" content="DailyFill — One crossword per day. Same grid for everyone. Resets midnight IST." />
     <meta name="theme-color" content="#111111" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -13,8 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body { min-height: 100%; }
-      #root { min-height: 100vh; }
+      html, body { min-height: 100%; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+      #root { min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
       body {
         background: #f4f2ed;
         margin: 0;
