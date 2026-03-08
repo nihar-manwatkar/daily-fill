@@ -1,97 +1,124 @@
-# DailyFill — Vercel Deployment Guide
+# DailyFill — Auto-Deploy Setup (Step-by-Step)
 
-## Prerequisites
-
-1. **Supabase account** — [supabase.com](https://supabase.com)
-2. **Vercel account** — [vercel.com](https://vercel.com)
-
----
-
-## Step 1: Create Supabase Project
-
-1. Go to [supabase.com](https://supabase.com) → New Project
-2. Note your **Project URL** and **anon key** (Settings → API)
-3. Get your **Service Role Key** (Settings → API — keep this secret!)
+This guide sets up **automatic deployment** so that when you push changes to GitHub:
+- **Vercel** deploys your frontend (already works if your repo is connected)
+- **Supabase** runs migrations so your database stays in sync
 
 ---
 
-## Step 2: Run Database Migrations
+## Part 1: Vercel (Already Automatic)
 
-In Supabase Dashboard → **SQL Editor**, run these in order:
+If your GitHub repo is connected to Vercel, **you're done**. Every push to `main` triggers a new deployment.
 
-1. **`supabase/migrations/001_create_users_table.sql`** (if not already run)
-2. **`supabase/migrations/002_profiles_scores.sql`**
-
-This creates:
-- `profiles` table (linked to auth.users)
-- `scores` table for leaderboard
-- RLS policies and triggers
+**To verify:**
+1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
+2. Open your DailyFill project
+3. Check **Settings → Git** — your repo should be connected
+4. Push a small change and confirm a new deployment appears under **Deployments**
 
 ---
 
-## Step 3: Configure Supabase Auth
+## Part 2: Supabase Auto-Migrations (One-Time Setup)
 
-1. **Authentication → Providers** — Email is enabled by default
-2. **Authentication → URL Configuration**:
-   - Site URL: `https://your-app.vercel.app` (or your domain)
-   - Redirect URLs: Add `https://your-app.vercel.app/**` and `http://localhost:5173/**` for dev
-3. **Email confirmation** (optional for internal testing):  
-   - Authentication → Providers → Email → disable "Confirm email" for faster signup during testing
+### Step 1: Get your Supabase Project Reference ID
+
+1. Go to [supabase.com/dashboard](https://supabase.com/dashboard)
+2. Open your DailyFill project
+3. Go to **Project Settings** (gear icon in the left sidebar)
+4. Under **General**, find **Reference ID** — it looks like `abcdefghijklmnop`
+5. Copy it — you'll need it as `SUPABASE_PROJECT_REF`
 
 ---
 
-## Step 4: Deploy to Vercel
+### Step 2: Create a Supabase Access Token
 
-### Option A: Deploy from GitHub
+1. Go to [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens)
+2. Click **Generate new token**
+3. Name it something like `GitHub Actions - DailyFill`
+4. Copy the token immediately (you won't see it again)
+5. You'll add this as `SUPABASE_ACCESS_TOKEN` in GitHub
 
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com) → New Project → Import your repo
-3. **Root Directory**: Set to `daily-fill` if your repo has the app in a subfolder
-4. Add **Environment Variables**:
+---
 
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `VITE_SUPABASE_URL` | `https://xxx.supabase.co` | From Supabase API settings |
-| `VITE_SUPABASE_ANON_KEY` | `eyJ...` | Public anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | `eyJ...` | Service role key (secret) |
-| `ADMIN_PASSWORD` | `dailyfill2026` | Admin panel password (optional) |
+### Step 3: Get your Database Password
 
-5. Deploy
+- This is the password you set when you created the Supabase project
+- If you don't remember it: **Project Settings → Database** → you can reset the database password
+- You'll add this as `SUPABASE_DB_PASSWORD` in GitHub
 
-### Option B: Deploy via CLI
+---
 
+### Step 4: Add Secrets to GitHub
+
+1. Go to your repo on GitHub: `https://github.com/YOUR_USERNAME/daily-fill`
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** and add these three:
+
+| Name | Value |
+|------|-------|
+| `SUPABASE_ACCESS_TOKEN` | The token from Step 2 |
+| `SUPABASE_PROJECT_REF` | The Reference ID from Step 1 |
+| `SUPABASE_DB_PASSWORD` | Your database password from Step 3 |
+
+---
+
+### Step 5: Push the Workflow (If You Haven't Already)
+
+The workflow file is at `.github/workflows/deploy.yml`. If it's in your repo and you've pushed it, you're set.
+
+To push:
 ```bash
 cd daily-fill
-npm i -g vercel
-vercel
-# Follow prompts, add env vars when asked
+git add .github/workflows/deploy.yml DEPLOYMENT.md
+git commit -m "Add auto-deploy workflow for Supabase migrations"
+git push origin main
 ```
 
 ---
 
-## Step 5: Post-Deploy Checklist
+### Step 6: Test It
 
-- [ ] Sign up with a test email — verify it works
-- [ ] Complete a puzzle — verify score appears on leaderboard
-- [ ] Visit `https://your-app.vercel.app/#admin` — enter password `dailyfill2026`
-- [ ] Admin dashboard shows real users and puzzle stats
+1. Make a small change to any file in `supabase/migrations/` (e.g. add a comment)
+2. Commit and push:
+   ```bash
+   git add supabase/migrations/
+   git commit -m "Trigger migration workflow"
+   git push origin main
+   ```
+3. Go to your repo on GitHub → **Actions** tab
+4. You should see a **Deploy** workflow run
+5. Click it to see the logs — it should complete with "Push migrations" succeeding
 
 ---
 
-## Local Development with Supabase
+## Your Day-to-Day Flow
 
-1. Copy `.env.example` to `.env`
-2. Add your Supabase URL and keys
-3. Run `npm run dev` (no Express server needed — auth goes to Supabase)
-4. API routes (`/api/admin/*`) won't work locally unless you run `vercel dev`
+From now on:
+
+1. **Edit in Cursor** → save your changes
+2. **Commit and push:**
+   ```bash
+   git add .
+   git commit -m "Your change description"
+   git push origin main
+   ```
+3. **Vercel** deploys your frontend in ~1–2 minutes
+4. **Supabase** migrations run automatically when you change files in `supabase/migrations/`
+5. Visit your live URL to see the changes
 
 ---
 
 ## Troubleshooting
 
-| Issue | Fix |
-|-------|-----|
-| "Supabase not configured" | Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to Vercel env |
-| Admin shows 0 users | Add `SUPABASE_SERVICE_ROLE_KEY` to Vercel env |
-| Password reset link fails | Add your Vercel URL to Supabase Auth → Redirect URLs |
-| Leaderboard empty | Complete a puzzle while logged in — scores submit automatically |
+**"Supabase Migrations" workflow fails**
+- Check the **Actions** tab for the error message
+- Verify all three secrets are set correctly in GitHub
+- Ensure your database password is correct (try resetting it in Supabase if needed)
+
+**Vercel doesn't deploy**
+- Confirm your repo is connected in Vercel project settings
+- Check that you're pushing to the branch Vercel is watching (usually `main`)
+
+**Migrations run but tables don't change**
+- Migrations are applied in order; already-applied migrations are skipped
+- Check Supabase **Table Editor** or **SQL Editor** to confirm schema state
