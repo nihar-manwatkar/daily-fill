@@ -176,6 +176,34 @@ export function markSeenRules() {
   } catch { /* storage unavailable */ }
 }
 
+const SWIPE_HINT_KEY = 'df_swipe_hint_shown'
+/** Returns true if the first-time swipe hint has been shown. */
+export function hasSeenSwipeHint() {
+  try {
+    return localStorage.getItem(SWIPE_HINT_KEY) === '1'
+  } catch { return false }
+}
+/** Marks that the swipe hint has been shown. */
+export function markSeenSwipeHint() {
+  try {
+    localStorage.setItem(SWIPE_HINT_KEY, '1')
+  } catch { /* ignore */ }
+}
+
+const ATI_PROMPT_KEY = 'df_ati_prompt_shown'
+/** Returns true if the Add to Home Screen prompt has been shown/dismissed. */
+export function hasSeenAtiPrompt() {
+  try {
+    return localStorage.getItem(ATI_PROMPT_KEY) === '1'
+  } catch { return false }
+}
+/** Marks that the Add to Home Screen prompt has been shown. */
+export function markSeenAtiPrompt() {
+  try {
+    localStorage.setItem(ATI_PROMPT_KEY, '1')
+  } catch { /* ignore */ }
+}
+
 /** Returns true if user has already played this category today (IST) */
 export function hasPlayedToday(cat) {
   try { return localStorage.getItem(playedKey(cat)) === '1' } catch { return false }

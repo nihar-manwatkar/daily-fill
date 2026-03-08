@@ -1,12 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { S, COLORS, FONTS } from '../utils/styles.js'
 import { useIsMobile } from '../utils/useIsMobile.js'
+import { hasSeenAtiPrompt, markSeenAtiPrompt } from '../utils/helpers.js'
+import AddToHomePrompt from '../components/AddToHomePrompt.jsx'
 
 const TOP_N = 8
 
 export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame, goBoard, board = [], score = 0, onLogout, onShowScoringRules }) {
   const isMobile = useIsMobile()
   const [showMenu, setShowMenu] = useState(false)
+  const [showAtiPrompt, setShowAtiPrompt] = useState(false)
+
+  useEffect(() => {
+    if (isMobile && !hasSeenAtiPrompt()) {
+      const t = setTimeout(() => setShowAtiPrompt(true), 600)
+      return () => clearTimeout(t)
+    }
+  }, [isMobile])
+
+  const dismissAtiPrompt = () => {
+    markSeenAtiPrompt()
+    setShowAtiPrompt(false)
+  }
 
   return (
     <div style={{ ...S.screen, background: COLORS.bg }}>
@@ -64,6 +79,14 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
         </div>
         {showMenu && <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 99 }} aria-hidden="true" />}
       </div>
+
+      {/* Add to Home Screen prompt — mobile, first-time only */}
+      {showAtiPrompt && (
+        <AddToHomePrompt
+          onDismiss={dismissAtiPrompt}
+          onAdd={dismissAtiPrompt}
+        />
+      )}
 
       {/* ── Body ── */}
       <div style={{ flex: 1, overflowY: 'auto' }}>

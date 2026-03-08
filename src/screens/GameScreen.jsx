@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import { S, COLORS, FONTS, FONT_SCALE } from '../utils/styles.js'
 import { PENALTY } from '../data/puzzles.js'
-import { numAt, pairFor } from '../utils/helpers.js'
+import { numAt, pairFor, hasSeenSwipeHint, markSeenSwipeHint } from '../utils/helpers.js'
 import { useIsMobile } from '../utils/useIsMobile.js'
 import { FaWhatsapp, FaLinkedinIn, FaInstagram, FaFacebook, FaDownload, FaEllipsisH } from 'react-icons/fa'
 import MobileCustomKeyboard from '../components/MobileCustomKeyboard.jsx'
@@ -213,6 +213,17 @@ export default function GameScreen({
   // Mobile swipe: 0 = puzzle, 1 = clues, 2 = trivia
   const [mobilePage, setMobilePage] = useState(0)
   const swipeStartX = useRef(0)
+
+  // First-time swipe hint: gently peek at clues, then return (mobile only)
+  useEffect(() => {
+    if (!isMobile || hasSeenSwipeHint() || completed) return
+    const t1 = setTimeout(() => setMobilePage(1), 900)
+    const t2 = setTimeout(() => {
+      setMobilePage(0)
+      markSeenSwipeHint()
+    }, 2400)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [isMobile, completed])
   // Pre-generated share blob (ready before click) — avoids user-gesture expiration with async toBlob
   const shareBlobRef = useRef(null)
   const [shareToast, setShareToast] = useState(null)
