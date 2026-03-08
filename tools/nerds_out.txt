@@ -1,0 +1,62 @@
+﻿Generating 'nerds' crossword using CSP solver...
+(Template: 5x5 | 3 across + 3 down)
+
+  Attempt   1 (seed=8887039) ... SOLVED in 1 attempt(s)!
+
+================================================================
+  CATEGORY: NERDS
+================================================================
+
+GRID:
+   1   H   2   W   3
+   T  ##   R  ##   U
+   4   N   D   E   R
+   F  ##   E  ##   S
+   5   O   R   C   E
+
+ACROSS WORDS (write clues for these):
+   1. SHOWN         r=0 c=0 len=5
+   4. UNDER         r=2 c=0 len=5
+   5. FORCE         r=4 c=0 len=5
+
+DOWN WORDS (write clues for these):
+   1. STUFF         r=0 c=0 len=5
+   2. ORDER         r=0 c=2 len=5
+   3. NURSE         r=0 c=4 len=5
+
+----------------------------------------------------------------
+PASTE THIS INTO puzzles.js  (fill in [CLUE] and [TRIVIA]):
+----------------------------------------------------------------
+  nerds: {
+    grid: [
+      ["S", "H", "O", "W", "N"],
+      ["T", null, "R", null, "U"],
+      ["U", "N", "D", "E", "R"],
+      ["F", null, "E", null, "S"],
+      ["F", "O", "R", "C", "E"],
+    ],
+    clues: {
+      across: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR SHOWN]",
+          trivia: "[TRIVIA FOR SHOWN]" },
+        { n: 4,  r: 2,  c: 0,  len: 5,
+          clue: "[CLUE FOR UNDER]",
+          trivia: "[TRIVIA FOR UNDER]" },
+        { n: 5,  r: 4,  c: 0,  len: 5,
+          clue: "[CLUE FOR FORCE]",
+          trivia: "[TRIVIA FOR FORCE]" },
+      ],
+      down: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR STUFF]",
+          trivia: "[TRIVIA FOR STUFF]" },
+        { n: 2,  r: 0,  c: 2,  len: 5,
+          clue: "[CLUE FOR ORDER]",
+          trivia: "[TRIVIA FOR ORDER]" },
+        { n: 3,  r: 0,  c: 4,  len: 5,
+          clue: "[CLUE FOR NURSE]",
+          trivia: "[TRIVIA FOR NURSE]" },
+      ],
+    },
+  },

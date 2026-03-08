@@ -1,0 +1,62 @@
+﻿Generating 'business' crossword using CSP solver...
+(Template: 5x5 | 3 across + 3 down)
+
+  Attempt   1 (seed=5545715) ... SOLVED in 1 attempt(s)!
+
+================================================================
+  CATEGORY: BUSINESS
+================================================================
+
+GRID:
+   1   O   2   T   3
+   A  ##   T  ##   W
+   4   S   A   G   E
+   S  ##   K  ##   E
+   5   V   E   N   T
+
+ACROSS WORDS (write clues for these):
+   1. COSTS         r=0 c=0 len=5
+   4. USAGE         r=2 c=0 len=5
+   5. EVENT         r=4 c=0 len=5
+
+DOWN WORDS (write clues for these):
+   1. CAUSE         r=0 c=0 len=5
+   2. STAKE         r=0 c=2 len=5
+   3. SWEET         r=0 c=4 len=5
+
+----------------------------------------------------------------
+PASTE THIS INTO puzzles.js  (fill in [CLUE] and [TRIVIA]):
+----------------------------------------------------------------
+  business: {
+    grid: [
+      ["C", "O", "S", "T", "S"],
+      ["A", null, "T", null, "W"],
+      ["U", "S", "A", "G", "E"],
+      ["S", null, "K", null, "E"],
+      ["E", "V", "E", "N", "T"],
+    ],
+    clues: {
+      across: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR COSTS]",
+          trivia: "[TRIVIA FOR COSTS]" },
+        { n: 4,  r: 2,  c: 0,  len: 5,
+          clue: "[CLUE FOR USAGE]",
+          trivia: "[TRIVIA FOR USAGE]" },
+        { n: 5,  r: 4,  c: 0,  len: 5,
+          clue: "[CLUE FOR EVENT]",
+          trivia: "[TRIVIA FOR EVENT]" },
+      ],
+      down: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR CAUSE]",
+          trivia: "[TRIVIA FOR CAUSE]" },
+        { n: 2,  r: 0,  c: 2,  len: 5,
+          clue: "[CLUE FOR STAKE]",
+          trivia: "[TRIVIA FOR STAKE]" },
+        { n: 3,  r: 0,  c: 4,  len: 5,
+          clue: "[CLUE FOR SWEET]",
+          trivia: "[TRIVIA FOR SWEET]" },
+      ],
+    },
+  },

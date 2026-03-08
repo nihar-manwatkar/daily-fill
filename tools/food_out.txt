@@ -1,0 +1,62 @@
+﻿Generating 'food' crossword using CSP solver...
+(Template: 5x5 | 3 across + 3 down)
+
+  Attempt   1 (seed=8347544) ... SOLVED in 1 attempt(s)!
+
+================================================================
+  CATEGORY: FOOD
+================================================================
+
+GRID:
+   1   N   2   E   3
+   I  ##   H  ##   A
+   4   R   O   U   P
+   H  ##   S  ##   I
+   5   R   E   N   D
+
+ACROSS WORDS (write clues for these):
+   1. ENTER         r=0 c=0 len=5
+   4. GROUP         r=2 c=0 len=5
+   5. TREND         r=4 c=0 len=5
+
+DOWN WORDS (write clues for these):
+   1. EIGHT         r=0 c=0 len=5
+   2. THOSE         r=0 c=2 len=5
+   3. RAPID         r=0 c=4 len=5
+
+----------------------------------------------------------------
+PASTE THIS INTO puzzles.js  (fill in [CLUE] and [TRIVIA]):
+----------------------------------------------------------------
+  food: {
+    grid: [
+      ["E", "N", "T", "E", "R"],
+      ["I", null, "H", null, "A"],
+      ["G", "R", "O", "U", "P"],
+      ["H", null, "S", null, "I"],
+      ["T", "R", "E", "N", "D"],
+    ],
+    clues: {
+      across: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR ENTER]",
+          trivia: "[TRIVIA FOR ENTER]" },
+        { n: 4,  r: 2,  c: 0,  len: 5,
+          clue: "[CLUE FOR GROUP]",
+          trivia: "[TRIVIA FOR GROUP]" },
+        { n: 5,  r: 4,  c: 0,  len: 5,
+          clue: "[CLUE FOR TREND]",
+          trivia: "[TRIVIA FOR TREND]" },
+      ],
+      down: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR EIGHT]",
+          trivia: "[TRIVIA FOR EIGHT]" },
+        { n: 2,  r: 0,  c: 2,  len: 5,
+          clue: "[CLUE FOR THOSE]",
+          trivia: "[TRIVIA FOR THOSE]" },
+        { n: 3,  r: 0,  c: 4,  len: 5,
+          clue: "[CLUE FOR RAPID]",
+          trivia: "[TRIVIA FOR RAPID]" },
+      ],
+    },
+  },

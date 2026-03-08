@@ -1,0 +1,62 @@
+﻿Generating 'wellness' crossword using CSP solver...
+(Template: 5x5 | 3 across + 3 down)
+
+  Attempt   1 (seed=6815878) ... SOLVED in 1 attempt(s)!
+
+================================================================
+  CATEGORY: WELLNESS
+================================================================
+
+GRID:
+   1   U   2   G   3
+   O  ##   R  ##   L
+   4   M   A   G   E
+   N  ##   M  ##   C
+   5   R   A   I   T
+
+ACROSS WORDS (write clues for these):
+   1. JUDGE         r=0 c=0 len=5
+   4. IMAGE         r=2 c=0 len=5
+   5. TRAIT         r=4 c=0 len=5
+
+DOWN WORDS (write clues for these):
+   1. JOINT         r=0 c=0 len=5
+   2. DRAMA         r=0 c=2 len=5
+   3. ELECT         r=0 c=4 len=5
+
+----------------------------------------------------------------
+PASTE THIS INTO puzzles.js  (fill in [CLUE] and [TRIVIA]):
+----------------------------------------------------------------
+  wellness: {
+    grid: [
+      ["J", "U", "D", "G", "E"],
+      ["O", null, "R", null, "L"],
+      ["I", "M", "A", "G", "E"],
+      ["N", null, "M", null, "C"],
+      ["T", "R", "A", "I", "T"],
+    ],
+    clues: {
+      across: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR JUDGE]",
+          trivia: "[TRIVIA FOR JUDGE]" },
+        { n: 4,  r: 2,  c: 0,  len: 5,
+          clue: "[CLUE FOR IMAGE]",
+          trivia: "[TRIVIA FOR IMAGE]" },
+        { n: 5,  r: 4,  c: 0,  len: 5,
+          clue: "[CLUE FOR TRAIT]",
+          trivia: "[TRIVIA FOR TRAIT]" },
+      ],
+      down: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR JOINT]",
+          trivia: "[TRIVIA FOR JOINT]" },
+        { n: 2,  r: 0,  c: 2,  len: 5,
+          clue: "[CLUE FOR DRAMA]",
+          trivia: "[TRIVIA FOR DRAMA]" },
+        { n: 3,  r: 0,  c: 4,  len: 5,
+          clue: "[CLUE FOR ELECT]",
+          trivia: "[TRIVIA FOR ELECT]" },
+      ],
+    },
+  },

@@ -1,0 +1,62 @@
+﻿Generating 'popculture' crossword using CSP solver...
+(Template: 5x5 | 3 across + 3 down)
+
+  Attempt   1 (seed=3178063) ... SOLVED in 1 attempt(s)!
+
+================================================================
+  CATEGORY: POPCULTURE
+================================================================
+
+GRID:
+   1   H   2   E   3
+   R  ##   X  ##   I
+   4   F   T   E   N
+   N  ##   R  ##   K
+   5   L   A   S   S
+
+ACROSS WORDS (write clues for these):
+   1. WHEEL         r=0 c=0 len=5
+   4. OFTEN         r=2 c=0 len=5
+   5. GLASS         r=4 c=0 len=5
+
+DOWN WORDS (write clues for these):
+   1. WRONG         r=0 c=0 len=5
+   2. EXTRA         r=0 c=2 len=5
+   3. LINKS         r=0 c=4 len=5
+
+----------------------------------------------------------------
+PASTE THIS INTO puzzles.js  (fill in [CLUE] and [TRIVIA]):
+----------------------------------------------------------------
+  popculture: {
+    grid: [
+      ["W", "H", "E", "E", "L"],
+      ["R", null, "X", null, "I"],
+      ["O", "F", "T", "E", "N"],
+      ["N", null, "R", null, "K"],
+      ["G", "L", "A", "S", "S"],
+    ],
+    clues: {
+      across: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR WHEEL]",
+          trivia: "[TRIVIA FOR WHEEL]" },
+        { n: 4,  r: 2,  c: 0,  len: 5,
+          clue: "[CLUE FOR OFTEN]",
+          trivia: "[TRIVIA FOR OFTEN]" },
+        { n: 5,  r: 4,  c: 0,  len: 5,
+          clue: "[CLUE FOR GLASS]",
+          trivia: "[TRIVIA FOR GLASS]" },
+      ],
+      down: [
+        { n: 1,  r: 0,  c: 0,  len: 5,
+          clue: "[CLUE FOR WRONG]",
+          trivia: "[TRIVIA FOR WRONG]" },
+        { n: 2,  r: 0,  c: 2,  len: 5,
+          clue: "[CLUE FOR EXTRA]",
+          trivia: "[TRIVIA FOR EXTRA]" },
+        { n: 3,  r: 0,  c: 4,  len: 5,
+          clue: "[CLUE FOR LINKS]",
+          trivia: "[TRIVIA FOR LINKS]" },
+      ],
+    },
+  },

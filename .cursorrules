@@ -1,0 +1,53 @@
+# DailyFill — Cursor AI Rules
+
+## Project Overview
+DailyFill is a daily crossword puzzle web app. One puzzle per day, same for all users,
+resets at midnight IST. Built with React 18 + Vite 5, pure inline styles.
+
+## Architecture
+- **Single-page app** with screen-based navigation (no React Router)
+- **State lives in App.jsx** — all game logic, auth state, and navigation
+- **Screen components** are pure presentational — they receive props and call callbacks
+- **No CSS files** — all styles are inline style objects using tokens from `src/utils/styles.js`
+
+## Style Guide
+- Colors: always use `COLORS.*` from `src/utils/styles.js`
+- Fonts: always use `FONTS.serif` or `FONTS.sans` from `src/utils/styles.js`
+- To retheme the app, edit ONLY `src/utils/styles.js`
+- No Tailwind, no CSS modules, no styled-components
+
+## Puzzle Data Format
+Each puzzle in `src/data/puzzles.js`:
+```js
+{
+  grid: string[][]    // null = black cell, "A" = white cell with letter
+  clues: {
+    across: [{ n, r, c, len, clue }]  // n=number, r=row, c=col
+    down:   [{ n, r, c, len, clue }]
+  }
+}
+```
+
+## Scoring (do not change without updating README + score modal)
+- Start: 100 pts
+- Wrong at submit: −3 pts per cell
+- Reveal letter: −5 pts
+- Reveal word: −15 pts
+- Reveal grid: −100 pts
+- Check word wrong: −10 pts
+
+## Key Conventions
+- `ug` = user grid (what the player has typed)
+- `rev` = revealed cells (via Reveal button)
+- `chk` = checked cells (via Check Word)
+- `sc` = selected cell [row, col]
+- `dir` = 'across' | 'down'
+- `pen` = penalty points accumulated from reveals/checks
+- `pairFor(puzzle, r, c)` returns `{ across, down }` clue objects for a cell
+- `numAt(puzzle, r, c)` returns the clue number that starts at that cell
+
+## What NOT to change
+- The crossword grid renders using `display: inline-grid` — do not convert to table or canvas
+- Cell sizes are dynamically calculated via ResizeObserver in GameScreen.jsx
+- Physical keyboard is handled in App.jsx useEffect — do not remove
+- `stateRef` pattern is intentional to avoid stale closures in event handlers
