@@ -53,12 +53,14 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
-/** Generates a 9:16 (540×960) branded result card and returns the canvas element. */
+/** Generates a 9:16 (540×960) branded result card matching app style. Returns the canvas element. */
 function generateShareCard({ submittedScore, score, puzzle, ug }) {
   const W = 540, H = 960
   const canvas = document.createElement('canvas')
   canvas.width = W; canvas.height = H
   const ctx = canvas.getContext('2d')
+
+  const COLORS = { bg: '#f5f3ee', header: '#1a1a1a', accent: '#2C4A3E', text: '#111111', muted: '#888888', border: '#d4cfc7' }
 
   const displayScore = submittedScore ?? score
   const allClues = [...puzzle.clues.across, ...puzzle.clues.down]
@@ -70,99 +72,71 @@ function generateShareCard({ submittedScore, score, puzzle, ug }) {
   const dateStr = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
 
   // ── Background ─────────────────────────────────────────────────────────────
-  ctx.fillStyle = '#0d1b0d'
+  ctx.fillStyle = COLORS.bg
   ctx.fillRect(0, 0, W, H)
 
-  // Subtle crossword grid pattern overlay
-  ctx.strokeStyle = 'rgba(255,255,255,0.035)'
-  ctx.lineWidth = 1
-  for (let x = 0; x <= W; x += 36) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke() }
-  for (let y = 0; y <= H; y += 36) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke() }
+  // Top header bar
+  ctx.fillStyle = COLORS.header
+  ctx.fillRect(0, 0, W, 72)
+  ctx.fillStyle = COLORS.accent
+  ctx.fillRect(0, 72, W, 4)
 
-  // Top accent bar
-  ctx.fillStyle = '#4ade80'
-  ctx.fillRect(0, 0, W, 5)
-
-  // ── Logo ───────────────────────────────────────────────────────────────────
-  ctx.font = 'bold 52px Georgia, serif'
+  // Logo
+  ctx.font = 'bold 36px "Libre Baskerville", Georgia, serif'
   ctx.fillStyle = '#ffffff'
-  const dailyW = ctx.measureText('Daily').width
-  ctx.fillText('Daily', 48, 102)
-  ctx.fillStyle = '#4ade80'
-  ctx.fillText('Fill', 48 + dailyW, 102)
+  ctx.fillText('DailyFill', 48, 48)
 
   // Date
-  ctx.fillStyle = 'rgba(255,255,255,0.38)'
-  ctx.font = '17px Arial, sans-serif'
-  ctx.fillText(dateStr, 48, 134)
+  ctx.fillStyle = COLORS.muted
+  ctx.font = '15px "Source Sans 3", Arial, sans-serif'
+  ctx.fillText(dateStr, 48, 100)
 
   // Divider
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+  ctx.strokeStyle = COLORS.border
   ctx.lineWidth = 1
-  ctx.beginPath(); ctx.moveTo(48, 160); ctx.lineTo(W - 48, 160); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(48, 120); ctx.lineTo(W - 48, 120); ctx.stroke()
 
-  // ── Score section ──────────────────────────────────────────────────────────
-  ctx.fillStyle = 'rgba(255,255,255,0.38)'
-  ctx.font = '13px Arial, sans-serif'
-  ctx.fillText('Y O U R   S C O R E', 48, 212)
+  // Score section
+  ctx.fillStyle = COLORS.muted
+  ctx.font = '12px "Source Sans 3", Arial, sans-serif'
+  ctx.fillText('YOUR SCORE', 48, 160)
 
-  ctx.fillStyle = '#fbbf24'
-  ctx.font = 'bold 168px Georgia, serif'
+  ctx.fillStyle = COLORS.accent
+  ctx.font = 'bold 120px "Libre Baskerville", Georgia, serif'
   const scoreStr = String(displayScore)
-  ctx.fillText(scoreStr, 48, 408)
+  ctx.fillText(scoreStr, 48, 300)
   const scoreTextW = ctx.measureText(scoreStr).width
 
-  ctx.fillStyle = 'rgba(255,255,255,0.32)'
-  ctx.font = 'bold 36px Georgia, serif'
-  ctx.fillText('/ 100', 48 + scoreTextW + 14, 390)
+  ctx.fillStyle = COLORS.muted
+  ctx.font = 'bold 28px "Libre Baskerville", Georgia, serif'
+  ctx.fillText('/ 100', 48 + scoreTextW + 12, 282)
 
-  // Score progress bar
-  const barX = 48, barY = 432, barW = W - 96, barH = 8
-  ctx.fillStyle = 'rgba(255,255,255,0.1)'
-  roundRect(ctx, barX, barY, barW, barH, 4); ctx.fill()
-  ctx.fillStyle = '#4ade80'
-  const filled = Math.max(6, Math.round(barW * Math.min(displayScore, 100) / 100))
-  roundRect(ctx, barX, barY, filled, barH, 4); ctx.fill()
+  // Progress bar
+  const barX = 48, barY = 320, barW = W - 96, barH = 6
+  ctx.fillStyle = COLORS.border
+  roundRect(ctx, barX, barY, barW, barH, 3); ctx.fill()
+  ctx.fillStyle = COLORS.accent
+  const filled = Math.max(4, Math.round(barW * Math.min(displayScore, 100) / 100))
+  roundRect(ctx, barX, barY, filled, barH, 3); ctx.fill()
 
-  // ── Words chips ────────────────────────────────────────────────────────────
-  const chipY = 472, chipH = 58, chipW = 214
-
-  ctx.fillStyle = '#166534'
-  roundRect(ctx, 48, chipY, chipW, chipH, 29); ctx.fill()
-  ctx.fillStyle = '#4ade80'
-  ctx.font = 'bold 21px Arial, sans-serif'
-  ctx.fillText(`✓  ${wordsCorrect} Correct`, 48 + 22, chipY + 37)
-
-  ctx.fillStyle = wordsWrong > 0 ? '#7f1d1d' : '#166534'
-  roundRect(ctx, 278, chipY, chipW, chipH, 29); ctx.fill()
-  ctx.fillStyle = wordsWrong > 0 ? '#fca5a5' : '#4ade80'
-  ctx.font = 'bold 21px Arial, sans-serif'
-  ctx.fillText(`✕  ${wordsWrong} Wrong`, 278 + 22, chipY + 37)
-
-  ctx.fillStyle = 'rgba(255,255,255,0.28)'
-  ctx.font = '15px Arial, sans-serif'
-  ctx.fillText(`${allClues.length} words total`, 48, 572)
+  // Word stats (simple text)
+  ctx.fillStyle = COLORS.text
+  ctx.font = '17px "Source Sans 3", Arial, sans-serif'
+  ctx.fillText(`${wordsCorrect} correct  ·  ${wordsWrong} wrong  ·  ${allClues.length} total`, 48, 380)
 
   // Divider
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+  ctx.strokeStyle = COLORS.border
   ctx.lineWidth = 1
-  ctx.beginPath(); ctx.moveTo(48, 618); ctx.lineTo(W - 48, 618); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(48, 420); ctx.lineTo(W - 48, 420); ctx.stroke()
 
-  // ── CTA section ────────────────────────────────────────────────────────────
-  ctx.fillStyle = 'rgba(255,255,255,0.45)'
-  ctx.font = '22px Arial, sans-serif'
-  ctx.fillText('Can you beat my score?', 48, 692)
+  // CTA
+  ctx.fillStyle = COLORS.muted
+  ctx.font = '18px "Source Sans 3", Arial, sans-serif'
+  ctx.fillText('Can you beat my score?', 48, 480)
 
-  ctx.fillStyle = '#4ade80'
-  ctx.font = 'bold 30px Georgia, serif'
-  ctx.fillText('dailyfill.app', 48, 738)
-
-  ctx.font = '48px Arial, sans-serif'
-  ctx.fillText('😈', W - 102, 742)
-
-  // Bottom accent bar
-  ctx.fillStyle = '#4ade80'
-  ctx.fillRect(0, H - 5, W, 5)
+  ctx.fillStyle = COLORS.accent
+  ctx.font = 'bold 22px "Libre Baskerville", Georgia, serif'
+  ctx.fillText('dailyfill.app', 48, 512)
 
   return canvas
 }
@@ -210,6 +184,9 @@ export default function GameScreen({
   const [showAnswerGrid, setShowAnswerGrid] = useState(false)
   // Mobile header: burger menu dropdown open/close
   const [showHeaderMenu, setShowHeaderMenu] = useState(false)
+  // Submit confirmation: 'complete' | 'early' | null
+  const [showConfirmSubmit, setShowConfirmSubmit] = useState(false)
+  const [pendingSubmit, setPendingSubmit] = useState(null)
   // Mobile swipe: 0 = puzzle, 1 = clues, 2 = trivia
   const [mobilePage, setMobilePage] = useState(0)
   const swipeStartX = useRef(0)
@@ -478,6 +455,7 @@ export default function GameScreen({
       ...S.screen,
       background: COLORS.paper || COLORS.bg,
       userSelect: 'none',
+      ...(isMobile && { overflowX: 'hidden', maxWidth: '100vw', boxSizing: 'border-box' }),
       ...(!isMobile && {
         height: '100vh',
         maxHeight: '100vh',
@@ -612,26 +590,31 @@ export default function GameScreen({
           display: 'flex', justifyContent: 'center', gap: 8, padding: '8px 0 4px',
           flexShrink: 0, background: COLORS.paper || COLORS.bg,
         }}>
-          {['Puzzle', 'Clues List', 'Trivia'].map((label, i) => (
-            <button
-              key={label}
-              onClick={() => setMobilePage(i)}
-              style={{
-                background: 'none', border: 'none', padding: '4px 8px',
-                fontSize: 11, fontWeight: 700, fontFamily: FONTS.sans,
-                color: mobilePage === i ? COLORS.accent : COLORS.textMuted,
-                cursor: 'pointer',
-              }}
-            >
-              <span style={{
-                display: 'inline-block',
-                width: 8, height: 8, borderRadius: '50%',
-                background: mobilePage === i ? COLORS.accent : COLORS.border,
-                marginRight: 4, verticalAlign: 'middle',
-              }} />
-              {label}
-            </button>
-          ))}
+          {['Puzzle', 'Clues List', 'Trivia'].map((label, i) => {
+            const isTriviaBeacon = i === 2 && completed && mobilePage !== 2
+            return (
+              <button
+                key={label}
+                onClick={() => setMobilePage(i)}
+                style={{
+                  background: 'none', border: 'none', padding: '4px 8px',
+                  fontSize: 11, fontWeight: 700, fontFamily: FONTS.sans,
+                  color: mobilePage === i ? COLORS.accent : COLORS.textMuted,
+                  cursor: 'pointer',
+                  borderRadius: isTriviaBeacon ? 8 : 0,
+                  animation: isTriviaBeacon ? 'triviaBeacon 1.5s ease-in-out infinite' : undefined,
+                }}
+              >
+                <span style={{
+                  display: 'inline-block',
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: mobilePage === i ? COLORS.accent : (isTriviaBeacon ? COLORS.accent : COLORS.border),
+                  marginRight: 4, verticalAlign: 'middle',
+                }} />
+                {label}
+              </button>
+            )
+          })}
         </div>
       )}
 
@@ -641,7 +624,7 @@ export default function GameScreen({
           flex: 1,
           minHeight: 0,
           overflow: 'hidden',
-          padding: isMobile ? 12 : 16,
+          padding: isMobile ? 16 : 16,
           maxWidth: isMobile ? '100%' : 1400,
           margin: '0 auto',
           width: '100%',
@@ -684,8 +667,8 @@ export default function GameScreen({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                paddingLeft: 12,
-                paddingRight: 12,
+                paddingLeft: 16,
+                paddingRight: 16,
                 boxSizing: 'border-box',
                 WebkitOverflowScrolling: 'touch',
               }}>
@@ -702,12 +685,13 @@ export default function GameScreen({
               flexShrink: 0,
               display: 'flex',
               flexDirection: 'column',
+              alignItems: 'center',
               gap: 4,
             }}>
-              <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9, textAlign: 'center' }}>
                 {clue.n} {dir === 'across' ? 'Across' : 'Down'}
               </div>
-              <div style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>
+              <div style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35, textAlign: 'center' }}>
                 {clue.clue}
               </div>
             </div>
@@ -844,11 +828,11 @@ export default function GameScreen({
                   <path d="M15 18l-6-6 6-6" />
                 </svg>
               </button>
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9 }}>
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, fontFamily: FONTS.sans, textTransform: 'uppercase', letterSpacing: 0.5, opacity: 0.9, textAlign: 'center' }}>
                   {clue.n} {dir === 'across' ? 'Across' : 'Down'}
                 </div>
-                <div style={{ fontSize: Math.round(15 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35 }}>
+                <div style={{ fontSize: Math.round(15 * FONT_SCALE), fontFamily: FONTS.sans, fontWeight: 600, lineHeight: 1.35, textAlign: 'center' }}>
                   {clue.clue}
                 </div>
               </div>
@@ -968,12 +952,12 @@ export default function GameScreen({
                   })()}
                 </div>
                 {allFilled && !completed && (
-                  <button onClick={markComplete} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none' }}>
+                  <button onClick={() => { setPendingSubmit('complete'); setShowConfirmSubmit(true) }} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none' }}>
                     Complete
                   </button>
                 )}
                 {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && (
-                  <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>
+                  <button onClick={() => { setPendingSubmit('early'); setShowConfirmSubmit(true) }} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>
                     Submit Early (−5 pts per empty)
                   </button>
                 )}
@@ -1244,8 +1228,8 @@ export default function GameScreen({
                       </div>
                       {(() => { const wordReady = clue ? Array.from({ length: clue.len }, (_, i) => { const r2 = dir === 'across' ? clue.r : clue.r + i; const c2 = dir === 'across' ? clue.c + i : clue.c; return ug[r2]?.[c2] || '' }).every(Boolean) : false; return <button onClick={checkWord} style={{ ...actionBtnUnderGrid, flex: 1, minWidth: 0, opacity: wordReady ? 1 : 0.4, cursor: wordReady ? 'pointer' : 'not-allowed' }} disabled={!wordReady}>Check</button> })()}
                     </div>
-                    {allFilled && !completed && <button onClick={markComplete} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none' }}>Complete</button>}
-                    {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && <button onClick={markCompleteEarly} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>Submit Early (−5 pts per empty)</button>}
+                    {allFilled && !completed && <button onClick={() => { setPendingSubmit('complete'); setShowConfirmSubmit(true) }} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none' }}>Complete</button>}
+                    {!allFilled && !completed && fillPercent >= 0.3 && markCompleteEarly && <button onClick={() => { setPendingSubmit('early'); setShowConfirmSubmit(true) }} style={{ ...actionBtnUnderGrid, width: '100%', background: COLORS.accent, color: COLORS.white, border: 'none', fontSize: 13 }}>Submit Early (−5 pts per empty)</button>}
                   </>
                 )}
               </div>
@@ -1271,7 +1255,25 @@ export default function GameScreen({
             </div>
             {/* Right column */}
             <div style={{ flex: '0 0 400px', minWidth: 350, maxWidth: 460, minHeight: 0, display: 'flex', flexDirection: 'column', background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', flexShrink: 0 }}>
-              <div style={{ display: 'flex', borderBottom: `1px solid ${COLORS.border}`, flexShrink: 0 }}>{(['clues', 'trivia']).map(tab => <button key={tab} onClick={() => setClueTab(tab)} style={{ flex: 1, padding: '10px 4px', border: 'none', background: clueTab === tab ? COLORS.accent : COLORS.white, color: clueTab === tab ? COLORS.white : COLORS.textMuted, fontWeight: 700, fontSize: Math.round(10 * FONT_SCALE), letterSpacing: 1, textTransform: 'uppercase', cursor: 'pointer', fontFamily: FONTS.sans, borderBottom: clueTab === tab ? `2px solid ${COLORS.accent}` : '2px solid transparent' }}>{tab}</button>)}</div>
+              <div style={{ display: 'flex', borderBottom: `1px solid ${COLORS.border}`, flexShrink: 0 }}>{(['clues', 'trivia']).map(tab => {
+                const isTriviaBeacon = tab === 'trivia' && completed && clueTab !== 'trivia'
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setClueTab(tab)}
+                    style={{
+                      flex: 1, padding: '10px 4px', border: 'none',
+                      background: clueTab === tab ? COLORS.accent : COLORS.white,
+                      color: clueTab === tab ? COLORS.white : COLORS.textMuted,
+                      fontWeight: 700, fontSize: Math.round(10 * FONT_SCALE), letterSpacing: 1, textTransform: 'uppercase',
+                      cursor: 'pointer', fontFamily: FONTS.sans,
+                      borderBottom: clueTab === tab ? `2px solid ${COLORS.accent}` : '2px solid transparent',
+                      borderRadius: isTriviaBeacon ? 6 : 0,
+                      animation: isTriviaBeacon ? 'triviaBeacon 1.5s ease-in-out infinite' : undefined,
+                    }}
+                  >{tab}</button>
+                )
+              })}</div>
               <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '12px 16px' }}>
                 {clueTab === 'clues' && <div><div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 2, fontFamily: FONTS.sans }}>ACROSS</div>{sortedAcross.map(cl => { const isActive = clue && clue.n === cl.n && dir === 'across'; const filled = isClueFilled(ug, cl, 'across'); return <div key={`a-${cl.n}`} onClick={() => goToClue && goToClue(cl, 'across')} style={{ padding: '5px 8px', cursor: 'pointer', background: isActive ? COLORS.clueHighlight : 'transparent', borderRadius: 3, marginBottom: 2, opacity: filled ? 0.55 : 1, color: filled ? COLORS.textMuted : COLORS.textPrimary }}><span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span><span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span></div>})}<div style={{ fontSize: Math.round(10 * FONT_SCALE), fontWeight: 700, letterSpacing: 1, color: COLORS.textMuted, marginBottom: 6, marginTop: 14, fontFamily: FONTS.sans }}>DOWN</div>{sortedDown.length > 0 ? sortedDown.map(cl => { const isActive = clue && clue.n === cl.n && dir === 'down'; const filled = isClueFilled(ug, cl, 'down'); return <div key={`d-${cl.n}`} onClick={() => goToClue && goToClue(cl, 'down')} style={{ padding: '5px 8px', cursor: 'pointer', background: isActive ? COLORS.clueHighlight : 'transparent', borderRadius: 3, marginBottom: 2, opacity: filled ? 0.55 : 1, color: filled ? COLORS.textMuted : COLORS.textPrimary }}><span style={{ fontWeight: 700, marginRight: 6, fontFamily: FONTS.serif, fontSize: Math.round(13 * FONT_SCALE) }}>{cl.n}.</span><span style={{ fontSize: Math.round(14 * FONT_SCALE), fontFamily: FONTS.sans }}>{cl.clue}</span></div>}) : <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 4 }}>No down clues.</div>}</div>}
                 {clueTab === 'trivia' && (completed ? <div>{allTriviaItems.length === 0 && <div style={{ color: COLORS.textMuted, fontSize: 13, fontFamily: FONTS.sans, fontStyle: 'italic', paddingTop: 8 }}>No trivia available.</div>}{allTriviaItems.map(({ cl, dir: d }, idx) => { const word = getWordStr(puzzle, cl, d); const correct = isWordCorrect(puzzle, ug, cl, d); return <div key={`${cl.n}-${d}`} style={{ marginBottom: 18, paddingBottom: 18, borderBottom: idx < allTriviaItems.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}><div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}><span style={{ fontFamily: FONTS.serif, fontSize: 15, fontWeight: 700, color: COLORS.textPrimary, letterSpacing: 0.5, textTransform: 'uppercase' }}>{word}</span><span style={{ fontSize: 10, fontFamily: FONTS.sans, background: '#f0f0f0', borderRadius: 4, padding: '2px 6px', color: COLORS.textMuted }}>{cl.n}{d === 'across' ? 'A' : 'D'}</span><span style={{ fontSize: 10, fontFamily: FONTS.sans, background: correct ? '#dcfce7' : '#fee2e2', color: correct ? '#16a34a' : '#dc2626', borderRadius: 4, padding: '2px 6px', fontWeight: 700 }}>{correct ? '✓' : '✗'}</span></div><div style={{ fontSize: 11, color: COLORS.textMuted, fontFamily: FONTS.sans, marginBottom: 6, fontStyle: 'italic' }}>{cl.clue}</div><div style={{ fontSize: 13, color: '#444', fontFamily: FONTS.sans, lineHeight: 1.55 }}>{cl.trivia}</div></div>})}</div> : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '32px 16px', gap: 12 }}><div style={{ fontSize: 36 }}>🔒</div><div style={{ fontFamily: FONTS.serif, fontSize: 16, color: COLORS.textPrimary }}>Trivia Locked</div><div style={{ fontSize: 13, color: COLORS.textMuted, fontFamily: FONTS.sans, lineHeight: 1.5 }}>Complete the crossword to unlock.</div></div>)}
@@ -1283,6 +1285,50 @@ export default function GameScreen({
       </div>
 
       {/* Mobile: custom keyboard replaces system — no hidden input */}
+
+      {/* ── Submit confirmation ──────────────────────────────────────────────── */}
+      {showConfirmSubmit && pendingSubmit && (
+        <div
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.55)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 250, padding: 20,
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowConfirmSubmit(false); setPendingSubmit(null) } }}
+        >
+          <div style={{
+            background: COLORS.white, borderRadius: 16, padding: '24px 24px',
+            width: '100%', maxWidth: 340, animation: 'popIn 0.25s ease', textAlign: 'center',
+          }}>
+            <div style={{ fontFamily: FONTS.serif, fontSize: 20, color: COLORS.textPrimary, marginBottom: 8 }}>
+              Are you sure?
+            </div>
+            <div style={{ color: COLORS.textMid, fontSize: 15, fontFamily: FONTS.sans, lineHeight: 1.5, marginBottom: 20 }}>
+              There&apos;s no turning back from here.
+            </div>
+            <div style={{ display: 'flex', gap: 10, flexDirection: 'column' }}>
+              <button
+                onClick={() => {
+                  if (pendingSubmit === 'complete') markComplete()
+                  else if (pendingSubmit === 'early') markCompleteEarly()
+                  setShowConfirmSubmit(false)
+                  setPendingSubmit(null)
+                }}
+                style={{ ...S.primaryBtn, width: '100%' }}
+              >
+                Yes, submit
+              </button>
+              <button
+                onClick={() => { setShowConfirmSubmit(false); setPendingSubmit(null) }}
+                style={{ ...secondaryBtn, marginBottom: 0 }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Completion overlay ──────────────────────────────────────────────── */}
       {showComplete && (
@@ -1442,7 +1488,7 @@ export default function GameScreen({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 { icon: '⭐', title: 'Start: 100 pts',           desc: 'Everyone starts fresh each day.' },
-                { icon: '❌', title: 'Wrong at submit: −3 pts per cell', desc: 'Cells you never checked that end up wrong.' },
+                { icon: '❌', title: 'Wrong at submit', desc: 'Wrong cell: −3 pts. Empty cell (early submit): −1 pt.' },
                 { icon: '💡', title: 'Reveal penalties',         desc: `Letter: −${PENALTY.letter} pts · Word: −${PENALTY.word} pts · Full grid: −100 pts.` },
                 { icon: '✓',  title: 'Check Word: −10 pts if wrong, free if correct', desc: 'No penalty for checking a correct word. Only charged −10 pts when the word has errors.' },
                 { icon: '📤', title: 'Submit Early: −5 pts per empty cell', desc: 'After 30% filled, you can submit early. Empty cells cost 5 pts each. Score cannot go below 0.' },
