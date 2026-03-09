@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { S, COLORS, FONTS } from './utils/styles.js'
 import { getCountdown, pairFor, numAt, hasPlayedToday, markPlayedToday, getIstDateStr, saveUser, getSavedUser, hasSeenRules, markSeenRules, saveProgress, loadProgress } from './utils/helpers.js'
 import { checkEmailExists, register, login, resetPassword, requestPasswordReset, updatePassword, isAliasTaken } from './api/auth.js'
-import { submitScore, getLeaderboard } from './api/scores.js'
+import { submitScore, getLeaderboard, hasScoreForDate, getScoreForDate } from './api/scores.js'
 import { supabase, isSupabaseConfigured } from './lib/supabase.js'
 
 // Once-per-day lock: disabled in dev (allow replay for testing); enabled in production builds.
 const ONCE_PER_DAY_ENABLED = !import.meta.env.DEV
-import { PENALTY } from './data/puzzles.js'
+import { PENALTY, getScoringRulesItems } from './data/puzzles.js'
 import { getPuzzleForDate } from './data/puzzleCalendar.js'
 
 import SplashScreen        from './screens/SplashScreen.jsx'
@@ -45,12 +45,14 @@ export default function App() {
   const [puzzle, setPuzzle] = useState(null)
   const [puzzleDate, setPuzzleDate] = useState(null) // Date when puzzle was loaded (IST) — used to avoid submitting when day has reset
 
-  // ── Once-per-day lock ────────────────────────────────────────────────────────
-  const hasPlayed = hasPlayedToday('classic')
+  // ── Once-per-day lock (localStorage + Supabase for cross-device sync) ─────────
+  const [hasPlayedFromServer, setHasPlayedFromServer] = useState(false)
+  const hasPlayed = hasPlayedToday('classic', user?.id) || hasPlayedFromServer
 
-  // ── In-progress game resume state ───────────────────────────────────────────
+  // ── In-progress game resume state (keyed by user ID so new users never see previous user's progress) ──
   const [hasProgress, setHasProgress] = useState(() => {
-    const saved = loadProgress()
+    const u = getSavedUser()
+    const saved = loadProgress(u?.id)
     return !!(saved && !saved.completed)
   })
 
@@ -163,6 +165,24 @@ export default function App() {
     setNewPassword('')
     setConfirmNewPassword('')
     setAuthError('')
+    setHasPlayedFromServer(false)
+    // Clear game state so next user doesn't inherit previous user's score/state
+    setPuzzle(null)
+    setPuzzleDate(null)
+    setUg([])
+    setRev([])
+    setChk([])
+    setSc(null)
+    setDir('across')
+    setClue(null)
+    setErrors(0)
+    setPen(0)
+    setAllFilled(false)
+    setCompleted(false)
+    setSubmittedScore(null)
+    setCompletedCorrect(false)
+    setShowComplete(false)
+    setLeaderboard([])
     setScreen('auth')
   }, [])
 
@@ -175,18 +195,52 @@ export default function App() {
   const stateRef = useRef({})
   stateRef.current = { puzzle, ug, rev, chk, sc, dir, clue, pen, user, puzzleDate }
 
-  // ── Fetch leaderboard when on leaderboard screen ─────────────────────────────
+  // ── Fetch leaderboard when on home or leaderboard (so stats show after completing) ─
   useEffect(() => {
-    if (screen !== 'leaderboard') return
+    if (screen !== 'home' && screen !== 'leaderboard') return
     getLeaderboard(getIstDateStr()).then(setLeaderboard)
   }, [screen])
 
-  // ── Auto-save game progress to localStorage (restores on same-day revisit) ──
+  // ── Refetch leaderboard after completing (score may not be in DB yet on first fetch) ─
+  useEffect(() => {
+    if ((screen === 'home' || screen === 'leaderboard') && completed) {
+      const t = setTimeout(() => getLeaderboard(getIstDateStr()).then(setLeaderboard), 800)
+      return () => clearTimeout(t)
+    }
+  }, [screen, completed])
+
+  // ── Reset hasPlayedFromServer when user changes (logout → new account must not inherit) ─
+  const prevUserIdRef = useRef(null)
+  useEffect(() => {
+    if (prevUserIdRef.current !== user?.id) {
+      prevUserIdRef.current = user?.id
+      setHasPlayedFromServer(false)
+    }
+  }, [user?.id])
+
+  // ── Cross-device "played today" sync: check Supabase when logged in ────────────
+  useEffect(() => {
+    if (!user?.id || !isSupabaseConfigured()) return
+    hasScoreForDate(user.id, getIstDateStr()).then(played => {
+      if (played) {
+        setHasPlayedFromServer(true)
+        setHasProgress(false) // Don't show "Resume" if completed on another device
+      }
+    })
+  }, [user?.id])
+
+  // ── Recompute hasProgress when user changes (fixes new user seeing previous user's "Resume") ──
+  useEffect(() => {
+    const saved = loadProgress(user?.id)
+    setHasProgress(!!(saved && !saved.completed))
+  }, [user?.id])
+
+  // ── Auto-save game progress to localStorage (restores on same-day revisit, keyed by user ID) ──
   useEffect(() => {
     if (screen !== 'game' || !puzzle) return
-    saveProgress({ ug, rev, chk, pen, errors, allFilled, completed, submittedScore, completedCorrect, sc, dir })
+    saveProgress({ ug, rev, chk, pen, errors, allFilled, completed, submittedScore, completedCorrect, sc, dir }, user?.id)
     setHasProgress(!completed)
-  }, [screen, puzzle, ug, rev, chk, pen, errors, allFilled, completed, submittedScore, completedCorrect, sc, dir])
+  }, [screen, puzzle, ug, rev, chk, pen, errors, allFilled, completed, submittedScore, completedCorrect, sc, dir, user?.id])
 
   // ── Physical keyboard support (letters, backspace, tab, arrow keys) ──────────
   useEffect(() => {
@@ -218,7 +272,7 @@ export default function App() {
     setPuzzle(pz)
     setPuzzleDate(today)
 
-    const saved = loadProgress()
+    const saved = loadProgress(user?.id)
     const canResume = saved && !saved.completed && saved.ug?.length === R
 
     if (canResume) {
@@ -286,6 +340,84 @@ export default function App() {
     setShowRulesModal(false)
     doStartGame()
   }, [doStartGame])
+
+  /** Revisit today's completed game to view result and trivia (same session or restored from localStorage) */
+  const viewResultAndTrivia = useCallback(async () => {
+    // Same session: game state already in App, just navigate
+    if (puzzle && completed) {
+      setScreen('game')
+      return
+    }
+    // Restore from localStorage (e.g. user closed app and came back later)
+    const pz = getPuzzleForDate(getIstDateStr())
+    if (!pz?.grid?.length) return
+    const R = pz.grid.length
+    const C = Math.max(pz.grid[0]?.length ?? 0, ...pz.grid.map(row => row?.length ?? 0))
+    if (C < 1) return
+
+    const saved = loadProgress(user?.id)
+    const hasCompletedSaved = saved?.completed && saved.ug?.length === R
+
+    if (hasCompletedSaved) {
+      setPuzzle(pz)
+      setPuzzleDate(getIstDateStr())
+      setUg(saved.ug)
+      setRev(saved.rev ?? Array.from({ length: R }, () => Array(C).fill(false)))
+      setChk(saved.chk ?? Array.from({ length: R }, () => Array(C).fill(false)))
+      setPen(saved.pen ?? 0)
+      setErrors(saved.errors ?? 0)
+      setAllFilled(true)
+      setCompleted(true)
+      setSubmittedScore(saved.submittedScore ?? null)
+      setCompletedCorrect(saved.completedCorrect ?? false)
+      setShowComplete(false)
+      if (saved.sc) {
+        const pair = pairFor(pz, saved.sc[0], saved.sc[1])
+        const restoredDir = saved.dir || 'across'
+        setSc(saved.sc)
+        setDir(restoredDir)
+        setClue(pair[restoredDir] || pair.across || pair.down || null)
+      } else {
+        setSc(null); setClue(null); setDir('across')
+      }
+    } else if (hasPlayedFromServer || hasPlayedToday('classic', user?.id)) {
+      // Completed on another device or localStorage cleared: show solved grid + trivia (no user input)
+      let userScore = leaderboard.find(e => e.name === user?.username)?.score ?? submittedScore
+      if (userScore == null && user?.id) {
+        userScore = await getScoreForDate(user.id, getIstDateStr())
+      }
+      const solvedGrid = pz.grid.map(row => row.map(v => v || ''))
+      const allChk = pz.grid.map(row => row.map(v => !!v))
+      setPuzzle(pz)
+      setPuzzleDate(getIstDateStr())
+      setUg(solvedGrid)
+      setRev(Array.from({ length: R }, () => Array(C).fill(false)))
+      setChk(allChk)
+      setPen(0)
+      setErrors(0)
+      setAllFilled(true)
+      setCompleted(true)
+      setSubmittedScore(userScore ?? null)
+      setCompletedCorrect(true)
+      setShowComplete(false)
+      setSc(null); setClue(null); setDir('across')
+    } else {
+      setPuzzle(pz)
+      setPuzzleDate(getIstDateStr())
+      setUg(saved?.ug ?? Array.from({ length: R }, () => Array(C).fill('')))
+      setRev(saved?.rev ?? Array.from({ length: R }, () => Array(C).fill(false)))
+      setChk(saved?.chk ?? Array.from({ length: R }, () => Array(C).fill(false)))
+      setPen(saved?.pen ?? 0)
+      setErrors(saved?.errors ?? 0)
+      setAllFilled(saved?.allFilled ?? false)
+      setCompleted(saved?.completed ?? false)
+      setSubmittedScore(saved?.submittedScore ?? null)
+      setCompletedCorrect(saved?.completedCorrect ?? false)
+      setShowComplete(false)
+      setSc(null); setClue(null); setDir('across')
+    }
+    setScreen('game')
+  }, [puzzle, completed, hasPlayedFromServer, leaderboard, user?.username, user?.id, submittedScore])
 
   const pickCell = useCallback((r, c, preferDir) => {
     const { puzzle: pz } = stateRef.current
@@ -440,20 +572,24 @@ export default function App() {
     const { puzzle: pz, ug: g, rev: rv, chk: ck, pen: p } = stateRef.current
     if (!pz) return
 
-    let wrongUnchecked = 0
+    let wrongFilled = 0  // wrong letter, unchecked
+    let emptyCells = 0   // empty cells (early submit)
     let allRight = true
 
     for (let rr = 0; rr < pz.grid.length; rr++) {
       for (let cc = 0; cc < pz.grid[0].length; cc++) {
-        if (pz.grid[rr][cc] && g[rr][cc] !== pz.grid[rr][cc]) {
-          allRight = false
-          if (!rv[rr]?.[cc] && !ck[rr]?.[cc]) wrongUnchecked++
-        }
+        if (!pz.grid[rr][cc]) continue
+        const entered = g[rr]?.[cc]
+        const correct = entered === pz.grid[rr][cc]
+        if (!correct) allRight = false
+        if (rv[rr]?.[cc] || ck[rr]?.[cc]) continue // revealed or checked — no penalty
+        if (!entered) emptyCells++
+        else wrongFilled++
       }
     }
 
-    const locked = Math.max(0, 100 - wrongUnchecked * 3 - p)
-    setErrors(wrongUnchecked)
+    const locked = Math.max(0, 100 - wrongFilled * PENALTY.wrongAtSubmit - emptyCells * PENALTY.emptyAtSubmit - p)
+    setErrors(wrongFilled + emptyCells)
     setSubmittedScore(locked)
     setCompleted(true)
     setCompletedCorrect(allRight)
@@ -461,46 +597,47 @@ export default function App() {
     // Only submit and mark played if puzzle is still for today (day hasn't reset)
     const today = getIstDateStr()
     if (puzzleDate === today) {
-      markPlayedToday('classic')
       const { user: u } = stateRef.current
+      markPlayedToday('classic', u?.id)
       if (u?.id) submitScore(u.id, today, locked, allRight)
     }
   }
 
-  /** Submit early (incomplete puzzle): −5 pts per empty cell, min 0. Only when ≥30% filled. */
+  /** Submit early (incomplete puzzle): −1 pt per empty cell, −2 pts per wrong cell. Only when ≥30% filled. */
   const markCompleteEarly = () => {
     const { puzzle: pz, ug: g, rev: rv, chk: ck, pen: p } = stateRef.current
     if (!pz) return
 
     let totalCells = 0
     let filledCells = 0
-    let wrongUnchecked = 0
+    let wrongFilled = 0
     let allRight = true
 
     for (let rr = 0; rr < pz.grid.length; rr++) {
       for (let cc = 0; cc < pz.grid[0].length; cc++) {
         if (pz.grid[rr][cc]) {
           totalCells++
-          if (g[rr]?.[cc]) filledCells++
-          if (g[rr][cc] !== pz.grid[rr][cc]) {
+          const entered = g[rr]?.[cc]
+          if (entered) filledCells++
+          if (entered !== pz.grid[rr][cc]) {
             allRight = false
-            if (!rv[rr]?.[cc] && !ck[rr]?.[cc]) wrongUnchecked++
+            if (!rv[rr]?.[cc] && !ck[rr]?.[cc] && entered) wrongFilled++
           }
         }
       }
     }
 
     const emptyCells = totalCells - filledCells
-    const locked = Math.max(0, 100 - wrongUnchecked * 3 - p - emptyCells * 5)
-    setErrors(wrongUnchecked)
+    const locked = Math.max(0, 100 - wrongFilled * PENALTY.wrongAtSubmit - emptyCells * PENALTY.emptyAtSubmit - p)
+    setErrors(wrongFilled + emptyCells)
     setSubmittedScore(locked)
     setCompleted(true)
     setCompletedCorrect(allRight)
     setShowComplete(true)
     const today = getIstDateStr()
     if (puzzleDate === today) {
-      markPlayedToday('classic')
       const { user: u } = stateRef.current
+      markPlayedToday('classic', u?.id)
       if (u?.id) submitScore(u.id, today, locked, allRight)
     }
   }
@@ -544,14 +681,14 @@ export default function App() {
   }
 
   const revealAll = () => {
-    const { puzzle: pz } = stateRef.current
+    const { puzzle: pz, user: u } = stateRef.current
     if (!pz) return
     const ng = pz.grid.map(row => row.map(v => v || ''))
     const nr = pz.grid.map(row => row.map(v => !!v))
     setUg(ng); setRev(nr)
-    setPen(100)
+    setPen(PENALTY.all)
     setAllFilled(true); setShowRevMenu(false)
-    markPlayedToday('classic')
+    markPlayedToday('classic', u?.id)
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -731,9 +868,10 @@ export default function App() {
           hasPlayed={ONCE_PER_DAY_ENABLED ? hasPlayed : false}
           hasProgress={hasProgress}
           startGame={startGame}
+          viewResultAndTrivia={viewResultAndTrivia}
           goBoard={() => setScreen('leaderboard')}
           board={leaderboard}
-          score={score}
+          score={submittedScore ?? (hasPlayedFromServer ? leaderboard.find(e => e.name === user?.username)?.score : null)}
           onLogout={logout}
           onShowScoringRules={() => setShowScoringRules(true)}
         />
@@ -772,6 +910,7 @@ export default function App() {
           cd={cd}
           user={user}
           score={score}
+          hasPlayed={ONCE_PER_DAY_ENABLED ? hasPlayed : false}
           goBack={() => setScreen('home')}
           onLogout={logout}
         />
@@ -795,16 +934,7 @@ export default function App() {
             <div style={{ fontFamily: FONTS.serif, fontSize: 24, color: COLORS.textPrimary, marginBottom: 10 }}>How Scoring Works</div>
             <div style={{ color: '#666', fontSize: 15, marginBottom: 18, fontFamily: FONTS.sans, lineHeight: 1.5 }}>You start at 100 pts.</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { icon: '⭐', title: 'Start: 100 pts', desc: 'Everyone starts fresh each day.' },
-                { icon: '❌', title: 'Wrong at submit: −3 pts per cell', desc: 'Cells you never checked that end up wrong.' },
-                { icon: '💡', title: 'Reveal penalties', desc: `Letter: −${PENALTY.letter} pts · Word: −${PENALTY.word} pts · Full grid: −100 pts.` },
-                { icon: '✓', title: 'Check Word: −10 pts if wrong, free if correct', desc: 'No penalty for checking a correct word. Only charged −10 pts when the word has errors.' },
-                { icon: '📤', title: 'Submit Early: −5 pts per empty cell', desc: 'After 30% filled, you can submit early. Empty cells cost 5 pts each. Score cannot go below 0.' },
-                { icon: '✔', title: 'Mark Complete', desc: 'Score locks when you tap Complete.' },
-                { icon: '🏆', title: 'Same puzzle, everyone', desc: 'All players get the same grid per category.' },
-                { icon: '⏱️', title: 'No time pressure', desc: 'Scoring is not based on how quickly you finish.' },
-              ].map(({ icon, title, desc }) => (
+              {getScoringRulesItems().map(({ icon, title, desc }) => (
                 <div key={title} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                   <span style={{ fontSize: 20, flexShrink: 0, marginTop: 1 }}>{icon}</span>
                   <div>
@@ -856,14 +986,7 @@ export default function App() {
               You start at 100 pts.
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { icon: '⭐', title: 'Start: 100 pts', desc: 'Everyone starts fresh each day.' },
-                { icon: '❌', title: 'Wrong at submit: −3 pts per cell', desc: 'Cells you never checked that end up wrong.' },
-                { icon: '💡', title: 'Reveal penalties', desc: 'Letter: −5 pts · Word: −15 pts · Full grid: −100 pts.' },
-                { icon: '✓', title: 'Check Word: −10 pts if wrong, free if correct', desc: 'No penalty for checking a correct word. Only charged −10 pts when the word has errors.' },
-                { icon: '🏆', title: 'Same puzzle for everyone', desc: 'All players get the same grid per day.' },
-                { icon: '⏱️', title: 'No time pressure', desc: 'Scoring is not based on how quickly you finish.' },
-              ].map(({ icon, title, desc }) => (
+              {getScoringRulesItems().map(({ icon, title, desc }) => (
                 <div key={title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <span style={{ fontSize: 22, flexShrink: 0 }}>{icon}</span>
                   <div>

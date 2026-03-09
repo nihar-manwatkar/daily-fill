@@ -6,7 +6,9 @@ import AddToHomePrompt from '../components/AddToHomePrompt.jsx'
 
 const TOP_N = 8
 
-export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame, goBoard, board = [], score = 0, onLogout, onShowScoringRules }) {
+export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame, viewResultAndTrivia, goBoard, board = [], score = 0, onLogout, onShowScoringRules }) {
+  // Before completing: show scores but blurred. After completing: show scores clearly.
+  const showScores = hasPlayed
   const isMobile = useIsMobile()
   const [showMenu, setShowMenu] = useState(false)
   const [showAtiPrompt, setShowAtiPrompt] = useState(false)
@@ -89,7 +91,7 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
       )}
 
       {/* ── Body ── */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ ...S.contentWrapWide, padding: isMobile ? '28px 20px 56px' : '48px 24px 64px', maxWidth: 520, margin: '0 auto' }}>
 
           <div style={{ marginBottom: 28, animation: 'fadeUp 0.35s ease' }}>
@@ -114,11 +116,11 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
             </div>
           </div>
 
-          {/* Today's leaderboard — pre-game: scores hidden; post-game: scores revealed */}
+          {/* Today's leaderboard — pre-game: scores blurred; post-game: scores visible */}
           <div style={{ marginBottom: 24, animation: 'fadeUp 0.5s ease' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ fontSize: 11, letterSpacing: 1.5, color: COLORS.textMuted, textTransform: 'uppercase', fontFamily: FONTS.sans, fontWeight: 700 }}>
-                Today's Top Players
+                Today's Players
               </div>
               <button
                 onClick={goBoard}
@@ -131,8 +133,8 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
               </button>
             </div>
 
-            {/* Post-game context banner */}
-            {hasPlayed && board.length > 0 && (() => {
+            {/* Post-game context banner — only show when user has played AND we have a real score (not stale from previous session) */}
+            {hasPlayed && score != null && (() => {
               const userEntry = board.find(e => e.name === user?.username)
               const topScore  = board[0]?.score
               return (
@@ -201,18 +203,15 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
                         )}
                       </span>
                     </div>
-                    {hasPlayed ? (
-                      <div style={{ color: COLORS.accent, fontFamily: FONTS.serif, fontSize: 16, fontWeight: 700 }}>
-                        {e.score}
-                      </div>
-                    ) : (
+                    {e.score != null && (
                       <div style={{
-                        background: '#e8f5e9', color: '#2e7d32',
-                        fontSize: 10, fontWeight: 700, fontFamily: FONTS.sans,
-                        padding: '3px 9px', borderRadius: 20, letterSpacing: 0.5,
-                        textTransform: 'uppercase',
+                        color: COLORS.accent,
+                        fontFamily: FONTS.serif,
+                        fontSize: 14,
+                        fontWeight: 700,
+                        ...(!showScores ? { filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' } : {}),
                       }}>
-                        Completed
+                        {e.score} pts
                       </div>
                     )}
                   </div>
@@ -221,25 +220,30 @@ export default function HomeScreen({ user, cd, hasPlayed, hasProgress, startGame
             </div>
 
             {!hasPlayed && board.length > 0 && (
-              <p style={{ color: COLORS.textMid, fontSize: 13, fontWeight: 600, fontFamily: FONTS.sans, textAlign: 'center', marginTop: 8 }}>
-                Scores revealed after you play today's puzzle.
+              <p style={{ color: COLORS.textMid, fontSize: 13, fontFamily: FONTS.sans, textAlign: 'center', marginTop: 8 }}>
+                Complete today&apos;s puzzle to reveal scores and see where you rank.
               </p>
             )}
           </div>
 
           {hasPlayed ? (
-            <div style={{
-              background: '#f0f0f0', border: `1.5px solid ${COLORS.border}`,
-              borderRadius: 8, padding: '18px 20px', textAlign: 'center', marginBottom: 10,
-            }}>
-              <div style={{ fontSize: 22, marginBottom: 6 }}>🔒</div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.textMid, fontFamily: FONTS.sans }}>
-                Already played today
+            <>
+              <button style={S.primaryBtn} onClick={viewResultAndTrivia}>
+                View Result &amp; Trivia →
+              </button>
+              <div style={{
+                background: '#f0f0f0', border: `1.5px solid ${COLORS.border}`,
+                borderRadius: 8, padding: '18px 20px', textAlign: 'center', marginTop: 10, marginBottom: 10,
+              }}>
+                <div style={{ fontSize: 22, marginBottom: 6 }}>🔒</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.textMid, fontFamily: FONTS.sans }}>
+                  Already played today
+                </div>
+                <div style={{ fontSize: 12, color: COLORS.textMuted, fontFamily: FONTS.sans, marginTop: 4 }}>
+                  Next puzzle unlocks in {cd}
+                </div>
               </div>
-              <div style={{ fontSize: 12, color: COLORS.textMuted, fontFamily: FONTS.sans, marginTop: 4 }}>
-                Next puzzle unlocks in {cd}
-              </div>
-            </div>
+            </>
           ) : hasProgress ? (
             <>
               <button style={S.primaryBtn} onClick={() => startGame({ skipRules: true })}>
