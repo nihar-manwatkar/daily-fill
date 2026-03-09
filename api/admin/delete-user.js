@@ -32,6 +32,14 @@ export default async function handler(req, res) {
   const supabase = createClient(url, key, { auth: { persistSession: false } })
 
   try {
+    // Delete related records first (scores → profiles) to avoid FK constraint failures
+    // that can occur with auth.admin.deleteUser even when cascade is configured
+    const { error: scoresErr } = await supabase.from('scores').delete().eq('user_id', userId)
+    if (scoresErr) console.warn('Scores delete warning:', scoresErr)
+
+    const { error: profilesErr } = await supabase.from('profiles').delete().eq('id', userId)
+    if (profilesErr) console.warn('Profiles delete warning:', profilesErr)
+
     const { error } = await supabase.auth.admin.deleteUser(userId)
     if (error) throw error
     return res.status(200).json({ ok: true })
