@@ -689,4 +689,19 @@ export const PUZZLES_V2 = {
   },
 }
 
-export const PENALTY = { letter: 5, word: 15, checkWord: 10, all: 100 }
+export const PENALTY = { letter: 5, word: 10, checkWord: 10, all: 100, wrongAtSubmit: 2, emptyAtSubmit: 1 }
+
+/** Single source of truth for scoring rules — used by first-time modal, menu modal, and in-game score popup. desc is array of lines for easier reading. */
+export function getScoringRulesItems() {
+  const P = PENALTY
+  return [
+    { icon: '⭐', title: 'Start: 100 pts', desc: ['Everyone starts fresh each day.'] },
+    { icon: '❌', title: 'When you Submit your Crossword', desc: [`For Wrong Cells: −${P.wrongAtSubmit} pts`, `For Empty Cells: −${P.emptyAtSubmit} pt`] },
+    { icon: '💡', title: 'Reveal Penalties', desc: [`Letter: −${P.letter} pts`, `Word: −${P.word} pts`, `Full grid: −${P.all} pts`] },
+    { icon: '✓', title: 'Check Word', desc: [`−${P.checkWord} pts if wrong`, 'Free if correct', 'No penalty when the word has no errors.'] },
+    { icon: '📤', title: 'Submit Early', desc: ['After 30% filled, you can submit your puzzle for the day.'] },
+    { icon: '✔', title: 'Mark Complete', desc: ['Score locks when you tap Complete.'] },
+    { icon: '🏆', title: 'Same puzzle, everyone', desc: ['All players get the same grid every day.'] },
+    { icon: '⏱️', title: 'No time pressure', desc: ['Scoring is not based on how quickly you finish.'] },
+  ]
+}
