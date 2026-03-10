@@ -282,7 +282,7 @@ export const PUZZLE_BANK = [
           "r": 4,
           "c": 1,
           "len": 5,
-          "clue": "Noble gas used in lights",
+          "clue": "What makes neon signs glow (different element)",
           "trivia": "Xenon headlights produce a bright white light; the gas was discovered in 1898."
         },
         {
@@ -290,15 +290,15 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 6,
           "len": 4,
-          "clue": "Defeat",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "What a drummer keeps",
+          "trivia": "In sports, 'beat' often means to defeat an opponent; the phrase 'you can't beat that' means something is unbeatable."
         },
         {
           "n": 23,
           "r": 11,
           "c": 11,
           "len": 5,
-          "clue": "Material from elephant tusks",
+          "clue": "Ebony's partner in a Stevie Wonder song",
           "trivia": "Piano keys were once ivory; makers switched to plastic in the mid-20th century."
         },
         {
@@ -306,7 +306,7 @@ export const PUZZLE_BANK = [
           "r": 12,
           "c": 0,
           "len": 5,
-          "clue": "Spiral shape like DNA",
+          "clue": "Double __ structure",
           "trivia": "DNA's helix completes a full twist every 10.5 base pairs; it's right-handed."
         },
         {
@@ -314,39 +314,39 @@ export const PUZZLE_BANK = [
           "r": 14,
           "c": 2,
           "len": 5,
-          "clue": "Sky vapour",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Head in the __",
+          "trivia": "Cloud computing is named after the cloud symbol used in network diagrams to represent the internet."
         },
         {
           "n": 7,
           "r": 3,
           "c": 6,
           "len": 4,
-          "clue": "Deeds",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "What a playwright writes",
+          "trivia": "Property deeds are legal documents proving ownership; the phrase 'good deeds' refers to kind actions."
         },
         {
           "n": 19,
           "r": 9,
           "c": 4,
           "len": 4,
-          "clue": "Invoice",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Duck or dollar",
+          "trivia": "The word 'bill' comes from Latin 'bulla' (seal); a bill of lading was originally a sealed document."
         },
         {
           "n": 9,
           "r": 4,
           "c": 10,
           "len": 5,
-          "clue": "Spotless",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Mr __ (comic character)",
+          "trivia": "Spring cleaning became popular in part because winter soot and grime could finally be cleared in warmer months."
         },
         {
           "n": 16,
           "r": 7,
           "c": 4,
           "len": 8,
-          "clue": "Young ones",
+          "clue": "Plural that defies the -s rule",
           "trivia": "The plural of 'child' is irregular in English."
         },
         {
@@ -354,23 +354,23 @@ export const PUZZLE_BANK = [
           "r": 11,
           "c": 6,
           "len": 4,
-          "clue": "Feathered creature",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Word for tweet, before Twitter",
+          "trivia": "Birds are the only surviving dinosaurs; their feathers evolved from scales over 150 million years ago."
         },
         {
           "n": 1,
           "r": 0,
           "c": 6,
           "len": 4,
-          "clue": "Continent",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Largest continent by land area",
+          "trivia": "Asia is Earth's largest continent by both area and population, home to over 60% of humans."
         },
         {
           "n": 5,
           "r": 2,
           "c": 1,
           "len": 5,
-          "clue": "Toxic secretion",
+          "clue": "Snake's delivery",
           "trivia": "Honeybee venom is used in apitherapy; some studies suggest benefits for arthritis."
         }
       ],
@@ -380,15 +380,15 @@ export const PUZZLE_BANK = [
           "r": 6,
           "c": 5,
           "len": 5,
-          "clue": "Link",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Reaction type or necklace",
+          "trivia": "Hyperlinks, introduced with the web in 1991, revolutionized how we navigate information."
         },
         {
           "n": 20,
           "r": 10,
           "c": 8,
           "len": 5,
-          "clue": "Light-splitting shape",
+          "clue": "Rainbow maker",
           "trivia": "Newton's prism experiments in 1666 showed that white light is a mix of colours."
         },
         {
@@ -396,31 +396,31 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 9,
           "len": 4,
-          "clue": "Creativity",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Liberal __",
+          "trivia": "Art therapy uses creative expression to support mental health and emotional well-being."
         },
         {
           "n": 17,
           "r": 9,
           "c": 0,
           "len": 5,
-          "clue": "First letter",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "First letter of the Greek alphabet",
+          "trivia": "Alpha and omega, the first and last Greek letters, symbolize the beginning and end in many traditions."
         },
         {
           "n": 12,
           "r": 5,
           "c": 8,
           "len": 4,
-          "clue": "Assists",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "HIV/AIDS, without the HIV",
+          "trivia": "In basketball, an assist is credited when a pass leads directly to a made basket."
         },
         {
           "n": 13,
           "r": 5,
           "c": 15,
           "len": 7,
-          "clue": "Truthfulness",
+          "clue": "Honest Abe's trait",
           "trivia": "Honesty is often cited as the best policy in moral philosophy."
         },
         {
@@ -428,15 +428,15 @@ export const PUZZLE_BANK = [
           "r": 6,
           "c": 10,
           "len": 4,
-          "clue": "Waist band",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Tighten your __",
+          "trivia": "The oldest known belts date back to the Bronze Age; they were used for both function and status."
         },
         {
           "n": 4,
           "r": 1,
           "c": 11,
           "len": 5,
-          "clue": "Suitably",
+          "clue": "As is proper",
           "trivia": "The word 'apt' shares roots with 'adapt' — both suggest something fits or suits its purpose."
         },
         {
@@ -444,31 +444,31 @@ export const PUZZLE_BANK = [
           "r": 11,
           "c": 6,
           "len": 4,
-          "clue": "Lost blood",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "What a wound does",
+          "trivia": "Adult humans have about 5 litres of blood; losing more than 40% can be life-threatening."
         },
         {
           "n": 6,
           "r": 2,
           "c": 7,
           "len": 4,
-          "clue": "Land measure",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "43,560 square feet",
+          "trivia": "An acre was historically the amount of land a yoke of oxen could plow in one day."
         },
         {
           "n": 3,
           "r": 1,
           "c": 4,
           "len": 5,
-          "clue": "Punctuation",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Pause for breath, in writing",
+          "trivia": "The comma may have been invented by Greek dramatist Aristophanes of Byzantium around 200 BCE."
         },
         {
           "n": 10,
           "r": 4,
           "c": 13,
           "len": 6,
-          "clue": "Secures a vessel",
+          "clue": "Ties up a boat",
           "trivia": "Ancient anchors were often just sacks of stones; the hooked design we know emerged around 3000 BCE."
         },
         {
@@ -476,7 +476,7 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 2,
           "len": 6,
-          "clue": "Pungent bulb",
+          "clue": "Vampire repellent?",
           "trivia": "Garlic's pungent smell comes from allicin, released when cells are crushed — a defence mechanism."
         },
         {
@@ -484,7 +484,7 @@ export const PUZZLE_BANK = [
           "r": 10,
           "c": 11,
           "len": 5,
-          "clue": "Dark hours",
+          "clue": "Before the dawn",
           "trivia": "Nocturnal animals have tapetum lucidum, a layer that reflects light and causes eye shine."
         }
       ]
@@ -770,7 +770,7 @@ export const PUZZLE_BANK = [
           "r": 8,
           "c": 11,
           "len": 5,
-          "clue": "Relating to sight",
+          "clue": "Retinal or visual",
           "trivia": "The human eye can distinguish about 10 million colours, though we name only a fraction."
         },
         {
@@ -778,7 +778,7 @@ export const PUZZLE_BANK = [
           "r": 11,
           "c": 0,
           "len": 6,
-          "clue": "Underwater explorers",
+          "clue": "Olympic category or deep-sea pros",
           "trivia": "Free divers can hold their breath for over 10 minutes; the record exceeds 11 minutes."
         },
         {
@@ -786,7 +786,7 @@ export const PUZZLE_BANK = [
           "r": 7,
           "c": 4,
           "len": 8,
-          "clue": "Young ones",
+          "clue": "Plural that defies the -s rule",
           "trivia": "The plural of 'child' is irregular in English."
         },
         {
@@ -794,7 +794,7 @@ export const PUZZLE_BANK = [
           "r": 6,
           "c": 11,
           "len": 5,
-          "clue": "Music collection or photo holder",
+          "clue": "LP or photo scrapbook",
           "trivia": "The word 'album' originally meant a blank tablet for writing; Romans used wax tablets bound like books."
         },
         {
@@ -802,15 +802,15 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 7,
           "len": 5,
-          "clue": "Valuable item",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Balance sheet plus",
+          "trivia": "In finance, an asset is anything that has economic value; the term comes from Old French 'assez' meaning enough."
         },
         {
           "n": 8,
           "r": 3,
           "c": 5,
           "len": 5,
-          "clue": "Shadow of an eclipse",
+          "clue": "Darkest part of a shadow",
           "trivia": "During totality, the Moon's umbra races across Earth at over 1,500 mph."
         },
         {
@@ -818,15 +818,15 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 3,
           "len": 5,
-          "clue": "Permit",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Give the go-ahead",
+          "trivia": "The word 'allow' shares roots with 'allocation' — both relate to granting or assigning something."
         },
         {
           "n": 19,
           "r": 9,
           "c": 1,
           "len": 5,
-          "clue": "Sour citrus fruit",
+          "clue": "In tea or on fish",
           "trivia": "Lemons and limes are different species; neither exists in the wild — both are hybrid citrus."
         },
         {
@@ -834,7 +834,7 @@ export const PUZZLE_BANK = [
           "r": 12,
           "c": 8,
           "len": 8,
-          "clue": "Next to",
+          "clue": "Adjacent to",
           "trivia": "In geometry, adjacent angles share a common side and vertex."
         },
         {
@@ -842,7 +842,7 @@ export const PUZZLE_BANK = [
           "r": 2,
           "c": 0,
           "len": 5,
-          "clue": "Baked staple food",
+          "clue": "Staff of life",
           "trivia": "Sourdough starters can live for decades; some bakeries use cultures over 100 years old."
         }
       ],
@@ -852,15 +852,15 @@ export const PUZZLE_BANK = [
           "r": 1,
           "c": 6,
           "len": 5,
-          "clue": "Brief appearance",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Famous actor's walk-on",
+          "trivia": "A cameo role is a brief appearance by a celebrity; the term comes from carved portrait jewellery."
         },
         {
           "n": 9,
           "r": 4,
           "c": 11,
           "len": 5,
-          "clue": "Keyboard instrument",
+          "clue": "88 keys, no pedals",
           "trivia": "A grand piano has over 12,000 parts; the strings exert about 30 tons of tension."
         },
         {
@@ -868,7 +868,7 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 9,
           "len": 5,
-          "clue": "Cause and effect in Eastern philosophy",
+          "clue": "What goes around comes around",
           "trivia": "In Buddhism, karma is intentional action; even thoughts and words create karma."
         },
         {
@@ -876,7 +876,7 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 7,
           "len": 5,
-          "clue": "Ballroom dance in triple time",
+          "clue": "1-2-3, 1-2-3",
           "trivia": "The waltz shocked 18th-century society because partners faced each other and embraced."
         },
         {
@@ -884,7 +884,7 @@ export const PUZZLE_BANK = [
           "r": 1,
           "c": 1,
           "len": 5,
-          "clue": "Frozen dew",
+          "clue": "Jack __",
           "trivia": "Robert Frost won four Pulitzer Prizes; he read at JFK's inauguration but couldn't see his paper in the sun."
         },
         {
@@ -892,7 +892,7 @@ export const PUZZLE_BANK = [
           "r": 2,
           "c": 15,
           "len": 5,
-          "clue": "Toxic secretion",
+          "clue": "Snake's delivery",
           "trivia": "Honeybee venom is used in apitherapy; some studies suggest benefits for arthritis."
         },
         {
@@ -900,7 +900,7 @@ export const PUZZLE_BANK = [
           "r": 8,
           "c": 1,
           "len": 6,
-          "clue": "Lacking pigment",
+          "clue": "White rabbit, perhaps",
           "trivia": "Albino animals rarely survive in the wild because their lack of camouflage makes them easy prey."
         },
         {
@@ -908,7 +908,7 @@ export const PUZZLE_BANK = [
           "r": 7,
           "c": 5,
           "len": 7,
-          "clue": "Truthfulness",
+          "clue": "Honest Abe's trait",
           "trivia": "Honesty is often cited as the best policy in moral philosophy."
         },
         {
@@ -916,7 +916,7 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 8,
           "len": 5,
-          "clue": "Violent weather event",
+          "clue": "Dorothy's ride to Oz",
           "trivia": "A single thunderstorm can hold enough energy to power a city for days."
         },
         {
@@ -924,7 +924,7 @@ export const PUZZLE_BANK = [
           "r": 8,
           "c": 15,
           "len": 7,
-          "clue": "Nation or rural area",
+          "clue": "Home and native?",
           "trivia": "The word derives from Latin contra — 'against' or 'opposite'."
         },
         {
@@ -932,7 +932,7 @@ export const PUZZLE_BANK = [
           "r": 2,
           "c": 3,
           "len": 5,
-          "clue": "Book of maps",
+          "clue": "Titan who holds up the sky",
           "trivia": "The Titan Atlas wasn't holding a globe; classical art showed him bearing the celestial sphere."
         }
       ]
@@ -1172,7 +1172,7 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 3,
           "len": 5,
-          "clue": "Animal life",
+          "clue": "Flora's partner in nature",
           "trivia": "Fauna was a Roman goddess of the countryside; Linnaeus borrowed the name for animal life."
         },
         {
@@ -1180,7 +1180,7 @@ export const PUZZLE_BANK = [
           "r": 7,
           "c": 4,
           "len": 6,
-          "clue": "Journey by air",
+          "clue": "Fight or __",
           "trivia": "The longest non-stop commercial flight is Singapore–New York, about 19 hours."
         },
         {
@@ -1188,7 +1188,7 @@ export const PUZZLE_BANK = [
           "r": 1,
           "c": 4,
           "len": 5,
-          "clue": "Suitably",
+          "clue": "As is proper",
           "trivia": "The word 'apt' shares roots with 'adapt' — both suggest something fits or suits its purpose."
         },
         {
@@ -1196,7 +1196,7 @@ export const PUZZLE_BANK = [
           "r": 12,
           "c": 4,
           "len": 5,
-          "clue": "Soft bedding",
+          "clue": "What you might flip",
           "trivia": "The duvet was popularised in Britain in the 1960s; Scandinavians had used them for centuries."
         },
         {
@@ -1204,7 +1204,7 @@ export const PUZZLE_BANK = [
           "r": 10,
           "c": 8,
           "len": 5,
-          "clue": "City-based",
+          "clue": "Opposite of rural",
           "trivia": "Tokyo is the world's largest city by population; over 37 million people live in its metro area."
         },
         {
@@ -1212,7 +1212,7 @@ export const PUZZLE_BANK = [
           "r": 6,
           "c": 9,
           "len": 5,
-          "clue": "Corroded",
+          "clue": "Brad Pitt's Ocean's Eleven character",
           "trivia": "Rust is iron oxide; it forms when iron reacts with oxygen and water."
         },
         {
@@ -1220,7 +1220,7 @@ export const PUZZLE_BANK = [
           "r": 8,
           "c": 0,
           "len": 5,
-          "clue": "Relating to voice",
+          "clue": "Spoken, not written",
           "trivia": "Humans can produce vowel sounds by changing the shape of the vocal tract."
         },
         {
@@ -1228,23 +1228,23 @@ export const PUZZLE_BANK = [
           "r": 11,
           "c": 0,
           "len": 5,
-          "clue": "Get up",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Phoenix from the ashes",
+          "trivia": "Sunrise has inspired poetry and religion for millennia; many cultures mark it as a sacred moment."
         },
         {
           "n": 4,
           "r": 3,
           "c": 2,
           "len": 5,
-          "clue": "Spotless",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Mr __ (comic character)",
+          "trivia": "Spring cleaning became popular in part because winter soot and grime could finally be cleared in warmer months."
         },
         {
           "n": 3,
           "r": 2,
           "c": 9,
           "len": 5,
-          "clue": "Adult female",
+          "clue": "Wonder __",
           "trivia": "The word 'woman' comes from Old English wīfmann — 'wife-person' or 'female human'."
         }
       ],
@@ -1254,23 +1254,23 @@ export const PUZZLE_BANK = [
           "r": 4,
           "c": 12,
           "len": 5,
-          "clue": "Capture",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "What a dog does with a ball",
+          "trivia": "The phrase 'catch-22' comes from Joseph Heller's novel — a logical paradox with no escape."
         },
         {
           "n": 2,
           "r": 1,
           "c": 4,
           "len": 5,
-          "clue": "Stadium",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Where gladiators fought",
+          "trivia": "Roman arenas like the Colosseum could hold 50,000 spectators; the design influenced modern stadiums."
         },
         {
           "n": 5,
           "r": 4,
           "c": 1,
           "len": 5,
-          "clue": "Keyboard instrument",
+          "clue": "88 keys, no pedals",
           "trivia": "A grand piano has over 12,000 parts; the strings exert about 30 tons of tension."
         },
         {
@@ -1278,7 +1278,7 @@ export const PUZZLE_BANK = [
           "r": 4,
           "c": 7,
           "len": 5,
-          "clue": "Tropical stone fruit",
+          "clue": "India's national fruit",
           "trivia": "Mangoes have been cultivated in India for over 4,000 years; the fruit is central to Indian summers."
         },
         {
@@ -1286,7 +1286,7 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 8,
           "len": 5,
-          "clue": "Allocated share",
+          "clue": "Immigration ceiling, e.g.",
           "trivia": "Immigration quotas in the US began in 1921, limiting arrivals by national origin."
         },
         {
@@ -1294,7 +1294,7 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 10,
           "len": 5,
-          "clue": "Elephant tusk material",
+          "clue": "Ebony's partner in song",
           "trivia": "Piano keys were once ivory; makers switched to plastic in the mid-20th century."
         },
         {
@@ -1302,23 +1302,23 @@ export const PUZZLE_BANK = [
           "r": 8,
           "c": 2,
           "len": 5,
-          "clue": "Assert",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Stake a __",
+          "trivia": "To 'claim' can mean to demand or assert; a claim in insurance is a request for payment after loss."
         },
         {
           "n": 9,
           "r": 5,
           "c": 9,
           "len": 4,
-          "clue": "Creativity",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Liberal __",
+          "trivia": "Art therapy uses creative expression to support mental health and emotional well-being."
         },
         {
           "n": 11,
           "r": 7,
           "c": 4,
           "len": 6,
-          "clue": "Having vertical grooves",
+          "clue": "Like classical column shafts",
           "trivia": "Fluted columns on Greek temples may have mimicked bundled reeds or improved light play."
         },
         {
@@ -1326,8 +1326,8 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 11,
           "len": 5,
-          "clue": "Wire",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "TV or charging",
+          "trivia": "Transatlantic telegraph cables, first laid in 1858, reduced communication between continents from weeks to minutes."
         }
       ]
     }
@@ -1566,23 +1566,23 @@ export const PUZZLE_BANK = [
           "r": 3,
           "c": 4,
           "len": 5,
-          "clue": "Brief appearance",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Famous actor's walk-on",
+          "trivia": "A cameo role is a brief appearance by a celebrity; the term comes from carved portrait jewellery."
         },
         {
           "n": 9,
           "r": 6,
           "c": 9,
           "len": 5,
-          "clue": "Empty",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Legal nullity",
+          "trivia": "In physics, a vacuum is space devoid of matter; outer space is not perfectly empty but extremely sparse."
         },
         {
           "n": 16,
           "r": 10,
           "c": 5,
           "len": 5,
-          "clue": "Most bad",
+          "clue": "Superlative of bad",
           "trivia": "Worst-case scenario planning helps engineers design for extreme events."
         },
         {
@@ -1590,15 +1590,15 @@ export const PUZZLE_BANK = [
           "r": 12,
           "c": 4,
           "len": 5,
-          "clue": "Limit",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Leap or jump",
+          "trivia": "In mathematics, limits describe the value a function approaches; they underpin calculus."
         },
         {
           "n": 10,
           "r": 7,
           "c": 4,
           "len": 6,
-          "clue": "Dense tropical forest",
+          "clue": "Book setting for Mowgli",
           "trivia": "Jungles are dense forests in the understory; rainforests have a distinct canopy layer."
         },
         {
@@ -1606,15 +1606,15 @@ export const PUZZLE_BANK = [
           "r": 13,
           "c": 9,
           "len": 5,
-          "clue": "Construct",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "__ a better mousetrap",
+          "trivia": "Humans have been building with brick for over 9,000 years; mud bricks predate fired bricks."
         },
         {
           "n": 1,
           "r": 0,
           "c": 2,
           "len": 5,
-          "clue": "Glowing coal in dying fire",
+          "clue": "Dying fire's glow",
           "trivia": "Embers can reignite fires hours or days later; many wildfires start from leftover campfire embers."
         },
         {
@@ -1622,15 +1622,15 @@ export const PUZZLE_BANK = [
           "r": 8,
           "c": 9,
           "len": 4,
-          "clue": "Opera solo",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Diva's showcase",
+          "trivia": "An aria is a solo vocal piece in opera; famous arias include 'Nessun dorma' from Turandot."
         },
         {
           "n": 12,
           "r": 9,
           "c": 0,
           "len": 5,
-          "clue": "Sailboat",
+          "clue": "America's Cup vessel",
           "trivia": "The America's Cup is the oldest trophy in international sport, first raced in 1851."
         },
         {
@@ -1638,8 +1638,8 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 5,
           "len": 4,
-          "clue": "Physique",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Cadavers and snatchers",
+          "trivia": "The human body has 206 bones in adults; babies are born with about 300, some of which fuse."
         }
       ],
       "down": [
@@ -1648,7 +1648,7 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 7,
           "len": 5,
-          "clue": "Tall lifting machine",
+          "clue": "Bird or construction equipment",
           "trivia": "Some crane species perform elaborate mating dances and form lifelong pair bonds."
         },
         {
@@ -1656,39 +1656,39 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 5,
           "len": 4,
-          "clue": "Haze",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Pea soup, sometimes",
+          "trivia": "Mist and fog differ by visibility: fog reduces visibility below 1 km; mist allows farther sight."
         },
         {
           "n": 8,
           "r": 5,
           "c": 11,
           "len": 5,
-          "clue": "Wooden hut",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "In the woods, or airplane section",
+          "trivia": "Log cabins were common among European settlers in North America; Lincoln was born in one."
         },
         {
           "n": 9,
           "r": 6,
           "c": 9,
           "len": 5,
-          "clue": "Animal",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Beauty and the __",
+          "trivia": "Beasts of burden — oxen, horses, camels — have shaped human civilization for millennia."
         },
         {
           "n": 5,
           "r": 3,
           "c": 13,
           "len": 5,
-          "clue": "Similar",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Cut from the same cloth",
+          "trivia": "No two snowflakes are exactly alike, but they share a hexagonal structure due to water's crystal shape."
         },
         {
           "n": 3,
           "r": 1,
           "c": 7,
           "len": 5,
-          "clue": "General direction",
+          "clue": "Ocean current or slow move",
           "trivia": "Trends in fashion and tech often follow an S-curve: slow start, rapid rise, plateau."
         },
         {
@@ -1696,23 +1696,23 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 4,
           "len": 5,
-          "clue": "Building block",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "First little pig's choice",
+          "trivia": "Lego bricks were invented in 1958; about 400 billion have been produced since."
         },
         {
           "n": 13,
           "r": 9,
           "c": 1,
           "len": 5,
-          "clue": "Sound",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "White __ pollution",
+          "trivia": "Sound travels about 343 m/s in air at 20°C; in water it's roughly four times faster."
         },
         {
           "n": 6,
           "r": 4,
           "c": 2,
           "len": 6,
-          "clue": "Pungent bulb",
+          "clue": "Vampire repellent?",
           "trivia": "Garlic's pungent smell comes from allicin, released when cells are crushed — a defence mechanism."
         },
         {
@@ -1720,8 +1720,8 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 13,
           "len": 5,
-          "clue": "Founded on",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Grounded in",
+          "trivia": "The phrase 'based on' often introduces adaptations; 'based on a true story' appears in many films."
         }
       ]
     }
@@ -1991,7 +1991,7 @@ export const PUZZLE_BANK = [
           "r": 3,
           "c": 0,
           "len": 6,
-          "clue": "Vast territorial domain",
+          "clue": "Strikes Back, for one",
           "trivia": "The British Empire at its peak controlled a quarter of the world's land and population."
         },
         {
@@ -1999,7 +1999,7 @@ export const PUZZLE_BANK = [
           "r": 7,
           "c": 3,
           "len": 8,
-          "clue": "Next to",
+          "clue": "Adjacent to",
           "trivia": "In geometry, adjacent angles share a common side and vertex."
         },
         {
@@ -2007,7 +2007,7 @@ export const PUZZLE_BANK = [
           "r": 13,
           "c": 9,
           "len": 6,
-          "clue": "Underwater explorers",
+          "clue": "Olympic category or deep-sea pros",
           "trivia": "Free divers can hold their breath for over 10 minutes; the record exceeds 11 minutes."
         },
         {
@@ -2015,7 +2015,7 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 4,
           "len": 5,
-          "clue": "Vast body of salt water",
+          "clue": "Seven seas, collectively",
           "trivia": "More than 80% of the ocean remains unexplored; we've mapped Mars better than our seas."
         },
         {
@@ -2023,7 +2023,7 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 4,
           "len": 6,
-          "clue": "Open-toed footwear",
+          "clue": "Flip-flop alternative",
           "trivia": "The oldest known sandals, from Oregon, are about 10,000 years old."
         },
         {
@@ -2031,15 +2031,15 @@ export const PUZZLE_BANK = [
           "r": 10,
           "c": 0,
           "len": 5,
-          "clue": "Modify",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Change, as hems",
+          "trivia": "To alter means to change; the word comes from Latin 'alter' meaning 'other'."
         },
         {
           "n": 5,
           "r": 2,
           "c": 5,
           "len": 5,
-          "clue": "Sphere representing Earth",
+          "clue": "Trotter's prize in travel",
           "trivia": "The oldest surviving terrestrial globe dates to 1492; it doesn't show the Americas."
         },
         {
@@ -2047,7 +2047,7 @@ export const PUZZLE_BANK = [
           "r": 4,
           "c": 8,
           "len": 5,
-          "clue": "Molten rock",
+          "clue": "Volcanic flow",
           "trivia": "Magma can sit underground for millions of years before erupting; Yellowstone's last big eruption was 640,000 years ago."
         },
         {
@@ -2055,7 +2055,7 @@ export const PUZZLE_BANK = [
           "r": 12,
           "c": 4,
           "len": 5,
-          "clue": "Metal fastener",
+          "clue": "Hold fast, like jeans",
           "trivia": "The Eiffel Tower used over 2.5 million rivets; construction took just over two years."
         },
         {
@@ -2063,15 +2063,15 @@ export const PUZZLE_BANK = [
           "r": 11,
           "c": 9,
           "len": 5,
-          "clue": "Bow projectile",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Cupid's weapon",
+          "trivia": "Arrows have been used for at least 64,000 years; the oldest known were found in South Africa."
         },
         {
           "n": 21,
           "r": 14,
           "c": 4,
           "len": 5,
-          "clue": "Tropical stone fruit",
+          "clue": "India's national fruit",
           "trivia": "Mangoes have been cultivated in India for over 4,000 years; the fruit is central to Indian summers."
         }
       ],
@@ -2082,30 +2082,30 @@ export const PUZZLE_BANK = [
           "c": 7,
           "len": 5,
           "clue": "Chocolate powder",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "trivia": "Cocoa powder is made by pressing chocolate liquor to remove most of the fat; Dutch process alkalizes it."
         },
         {
           "n": 9,
           "r": 4,
           "c": 12,
           "len": 5,
-          "clue": "Protective garment",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Baker's wear",
+          "trivia": "Aprons have been worn by cooks, craftspeople, and workers for centuries to protect clothing."
         },
         {
           "n": 2,
           "r": 0,
           "c": 5,
           "len": 5,
-          "clue": "Divine messenger",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Charlie's helper",
+          "trivia": "The word 'angel' comes from Greek 'angelos' meaning messenger; angels appear in many traditions."
         },
         {
           "n": 16,
           "r": 9,
           "c": 10,
           "len": 6,
-          "clue": "Pungent bulb",
+          "clue": "Vampire repellent?",
           "trivia": "Garlic's pungent smell comes from allicin, released when cells are crushed — a defence mechanism."
         },
         {
@@ -2113,7 +2113,7 @@ export const PUZZLE_BANK = [
           "r": 0,
           "c": 8,
           "len": 5,
-          "clue": "Music collection or photo holder",
+          "clue": "LP or photo scrapbook",
           "trivia": "The word 'album' originally meant a blank tablet for writing; Romans used wax tablets bound like books."
         },
         {
@@ -2121,7 +2121,7 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 6,
           "len": 6,
-          "clue": "Number after ten",
+          "clue": "Ocean's cohort",
           "trivia": "Eleven comes from Old English endleofan — literally 'one left' after counting to ten."
         },
         {
@@ -2129,7 +2129,7 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 4,
           "len": 6,
-          "clue": "Inside a building",
+          "clue": "Antonym of outdoor",
           "trivia": "Indoor air can be 2–5 times more polluted than outdoor air due to off-gassing and dust."
         },
         {
@@ -2137,7 +2137,7 @@ export const PUZZLE_BANK = [
           "r": 1,
           "c": 1,
           "len": 5,
-          "clue": "Extra large",
+          "clue": "In addition",
           "trivia": "Jumbo was a real elephant; P.T. Barnum bought him from London Zoo in 1882."
         },
         {
@@ -2145,7 +2145,7 @@ export const PUZZLE_BANK = [
           "r": 7,
           "c": 0,
           "len": 5,
-          "clue": "Work dough",
+          "clue": "Prep bread, before baking",
           "trivia": "Kneading develops gluten; over-kneading can make bread tough, so bakers watch the dough."
         },
         {
@@ -2153,8 +2153,8 @@ export const PUZZLE_BANK = [
           "r": 4,
           "c": 9,
           "len": 5,
-          "clue": "Accompanying",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Get __ (proceed)",
+          "trivia": "The phrase 'along with' means together with; 'go along' can mean to comply or proceed."
         }
       ]
     }
@@ -2393,15 +2393,15 @@ export const PUZZLE_BANK = [
           "r": 9,
           "c": 9,
           "len": 5,
-          "clue": "Stage performer",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "One with a supporting role?",
+          "trivia": "Actors in ancient Greek theatre wore masks to project their voices and portray different characters."
         },
         {
           "n": 9,
           "r": 5,
           "c": 5,
           "len": 5,
-          "clue": "Dry environment",
+          "clue": "Sahara or Mojave",
           "trivia": "Deserts are xeric; cacti and succulents have adaptations to store water."
         },
         {
@@ -2409,7 +2409,7 @@ export const PUZZLE_BANK = [
           "r": 7,
           "c": 3,
           "len": 7,
-          "clue": "Egg white",
+          "clue": "Protein-rich part of an egg",
           "trivia": "Egg white is mostly protein and water; it coagulates when heated."
         },
         {
@@ -2417,48 +2417,48 @@ export const PUZZLE_BANK = [
           "r": 2,
           "c": 8,
           "len": 5,
-          "clue": "Link",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Reaction type or necklace",
+          "trivia": "Hyperlinks, introduced with the web in 1991, revolutionized how we navigate information."
         },
         {
           "n": 6,
           "r": 2,
           "c": 0,
           "len": 5,
-          "clue": "Fries",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Fish and __",
+          "trivia": "Crispy fried potato strips are called chips in the UK and fries in the US; Belgians claim to have invented them."
         },
         {
           "n": 16,
           "r": 11,
           "c": 2,
           "len": 5,
-          "clue": "Polite",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Uncivil's opposite",
+          "trivia": "Civility and civilization share the Latin root 'civis' (citizen); civil discourse underpins democracy."
         },
         {
           "n": 17,
           "r": 13,
           "c": 5,
           "len": 5,
-          "clue": "Explode",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Bubble's fate",
+          "trivia": "A burst of speed or emotion; the word 'burst' is related to 'break' and 'burst' in Old English."
         },
         {
           "n": 4,
           "r": 1,
           "c": 4,
           "len": 4,
-          "clue": "Absent",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Far __",
+          "trivia": "The word 'away' shares roots with 'way'; to be away is to be on a path elsewhere."
         },
         {
           "n": 14,
           "r": 9,
           "c": 3,
           "len": 5,
-          "clue": "Stall",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Horse's quarters",
+          "trivia": "To delay or obstruct; a stall at a market is a booth for selling goods."
         }
       ],
       "down": [
@@ -2467,7 +2467,7 @@ export const PUZZLE_BANK = [
           "r": 2,
           "c": 0,
           "len": 5,
-          "clue": "Having curves",
+          "clue": "Not stick-straight",
           "trivia": "Human preference for curves may be evolutionary — sharp edges often meant danger."
         },
         {
@@ -2475,80 +2475,80 @@ export const PUZZLE_BANK = [
           "r": 5,
           "c": 11,
           "len": 5,
-          "clue": "Valuable item",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Balance sheet plus",
+          "trivia": "In finance, an asset is anything that has economic value; the term comes from Old French 'assez' meaning enough."
         },
         {
           "n": 15,
           "r": 9,
           "c": 9,
           "len": 5,
-          "clue": "Approximately",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "In the ballpark of",
+          "trivia": "The tilde (~) is often used to mean 'approximately' in mathematics and informal writing."
         },
         {
           "n": 5,
           "r": 1,
           "c": 6,
           "len": 5,
-          "clue": "Corner",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Cranny's partner",
+          "trivia": "A right angle measures 90 degrees; the word 'angle' comes from Latin 'angulus' meaning corner."
         },
         {
           "n": 8,
           "r": 4,
           "c": 8,
           "len": 4,
-          "clue": "Nip",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Sharp taste or what a mosquito does",
+          "trivia": "A small bite or pinch; 'nip in the air' refers to chilly weather that 'bites' at exposed skin."
         },
         {
           "n": 14,
           "r": 9,
           "c": 3,
           "len": 5,
-          "clue": "Fetch",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Get and carry",
+          "trivia": "Fetch is a popular game with dogs; the web Fetch API retrieves resources from the network."
         },
         {
           "n": 2,
           "r": 0,
           "c": 4,
           "len": 5,
-          "clue": "Founded on",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Grounded in",
+          "trivia": "The phrase 'based on' often introduces adaptations; 'based on a true story' appears in many films."
         },
         {
           "n": 1,
           "r": 0,
           "c": 2,
           "len": 5,
-          "clue": "Ascend",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Yeast makes bread do this",
+          "trivia": "To rise or climb; Mount Everest was first summited in 1953 by Hillary and Norgay."
         },
         {
           "n": 12,
           "r": 6,
           "c": 4,
           "len": 4,
-          "clue": "Voice range",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Low singer or fish",
+          "trivia": "Alto is a mid-range vocal part, typically for women or young boys; it means 'high' in Italian."
         },
         {
           "n": 3,
           "r": 0,
           "c": 10,
           "len": 5,
-          "clue": "Seaside",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Where to catch waves",
+          "trivia": "Beaches are dynamic; sand is constantly shifted by waves, wind, and tides."
         },
         {
           "n": 11,
           "r": 5,
           "c": 13,
           "len": 5,
-          "clue": "Fossil resin",
-          "trivia": "A curious word with a rich history — look it up and you might be surprised!"
+          "clue": "Yellow traffic light color",
+          "trivia": "Amber can preserve insects and plants for millions of years; Jurassic Park imagined extracting dinosaur DNA from it."
         }
       ]
     }
