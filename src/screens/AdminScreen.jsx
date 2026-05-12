@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { FaTrash } from 'react-icons/fa'
 import { COLORS, FONTS } from '../utils/styles.js'
 import PuzzleCreatorTab from './PuzzleCreatorTab.jsx'
-import { getIstDatePlusDays } from '../utils/helpers.js'
+import { getIstDatePlusDays, getIstDateStr } from '../utils/helpers.js'
 import { getRegisteredUsersForAdmin, deleteUserForAdmin, triggerDeployForAdmin } from '../api/auth.js'
 import { isSupabaseConfigured } from '../lib/supabase.js'
 import { getPuzzleForDate, getAdminPuzzleEdits, setAdminPuzzleEdits } from '../data/puzzleCalendar.js'
@@ -622,7 +622,7 @@ export default function AdminScreen() {
   )
 }
 
-// ─── UPCOMING PUZZLES (next 5 days, editable) ─────────────────────────────────
+// ─── UPCOMING PUZZLES (today + next 4 days, editable) ─────────────────────────────────
 
 function getWordFromGrid(grid, cl, dir) {
   let s = ''
@@ -648,7 +648,7 @@ function UpcomingPuzzlesSection() {
   }, [])
 
   const dates = useMemo(() =>
-    [1, 2, 3, 4, 5].map(d => getIstDatePlusDays(d)),
+    [0, 1, 2, 3, 4].map(d => getIstDatePlusDays(d)),
     []
   )
 
@@ -683,8 +683,8 @@ function UpcomingPuzzlesSection() {
   return (
     <div style={styles.section}>
       <div style={styles.sectionHeader}>
-        <h2 style={styles.sectionTitle}>Upcoming Puzzles (Next 5 Days)</h2>
-        <span style={styles.archiveHint}>Unpublished. Edit clues or words, then Save.</span>
+        <h2 style={styles.sectionTitle}>Upcoming Puzzles (Today + Next 4 Days)</h2>
+        <span style={styles.archiveHint}>Unpublished. Edit clues or words, then Save. Includes today&apos;s live puzzle.</span>
       </div>
       <div style={{ padding: '16px 24px 24px' }}>
         {dates.map(dateStr => {
@@ -702,6 +702,7 @@ function UpcomingPuzzlesSection() {
                   {new Date(dateStr + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
                 <span style={upcomingStyles.dateBadge}>{dateStr}</span>
+                {dateStr === getIstDateStr() && <span style={upcomingStyles.liveTodayBadge}>Live today</span>}
                 {existingEdits && <span style={upcomingStyles.editedBadge}>Edited</span>}
                 <span style={{ ...upcomingStyles.expandIcon, transform: isOpen ? 'rotate(180deg)' : 'none' }}>▾</span>
               </button>
@@ -852,6 +853,7 @@ const upcomingStyles = {
   },
   dateLabel: { fontWeight: 600, color: COLORS.textPrimary },
   dateBadge: { background: '#e0e0e0', padding: '2px 8px', borderRadius: 6, fontSize: 12, color: COLORS.textMuted },
+  liveTodayBadge: { background: 'rgba(180,100,30,0.18)', color: '#8b4513', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600 },
   editedBadge: { background: 'rgba(92,138,118,0.2)', color: COLORS.accent, padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600 },
   expandIcon: { marginLeft: 'auto', color: COLORS.textMuted, fontSize: 12 },
   cardBody: { padding: '20px', borderTop: '1px solid #e5e2da', background: '#fff' },
